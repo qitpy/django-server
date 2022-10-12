@@ -1,0 +1,34 @@
+version: '3.9'
+
+services:
+  app:
+    depends_on:
+      - db
+    build:
+      context: .
+      args:
+        - DEV=true
+    ports:
+      - '8000:8000'
+    volumes:
+      - ./app:/app
+    command: >
+      sh -c "python manage.py wait_for_db &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=maito_db
+      - DB_USER=maito
+      - DB_PASS=maitocode
+
+  db:
+    image: postgres:13-alpine
+    volumes:
+      - maito-db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=maito_db
+      - POSTGRES_USER=maito
+      - POSTGRES_PASSWORD=maitocode
+volumes:
+  maito-db-data:
