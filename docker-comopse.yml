@@ -1,0 +1,52 @@
+version: '3.9'
+
+services:
+  app:
+    depends_on:
+      - database
+    build:
+      context: .
+      args:
+        - DEV=true
+    ports:
+      - '21099:8000'
+    volumes:
+      - ./server:/server
+      - dev-static-data:/vol/web
+    command: >
+      sh -c "python manage.py wait_for_db &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DB_HOST=database
+      - DB_NAME=maito_db
+      - DB_USER=maito_db_user
+      - DB_PASS=maito_db_pw
+      - DEBUG=1
+
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - "${PGADMIN_PORT:-21098}:80"
+    restart: unless-stopped
+
+  database:
+    image: postgres:13-alpine
+    volumes:
+      - maito-db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=maito_db
+      - POSTGRES_USER=maito_db_user
+      - POSTGRES_PASSWORD=maito_db_pw
+
+volumes:
+  maito-db-data:
+  pgadmin:
+  dev-static-data:
