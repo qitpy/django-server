@@ -1,7 +1,7 @@
 version: '3.9'
 
 services:
-  app:
+  src:
     depends_on:
       - database
     build:
@@ -11,7 +11,7 @@ services:
     ports:
       - '21099:21099'
     volumes:
-      - ./server:/server
+      - ./src:/src
       - dev-static-data:/vol/web
     command: >
       sh -c "python manage.py wait_for_db &&

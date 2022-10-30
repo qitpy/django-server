@@ -7,8 +7,8 @@ ENV PYTHONUNBUFFERED 1
 COPY ./requirements.txt /tmp/requirements.txt
 COPY ./requirements.dev.txt /tmp/requirements.dev.txt
 COPY ./scripts /scripts
-COPY ./server /server
-WORKDIR /server
+COPY ./src /src
+WORKDIR /src
 EXPOSE 21099
 
 ARG DEV=false
