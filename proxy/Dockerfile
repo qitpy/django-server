@@ -6,7 +6,7 @@ COPY ./uwsgi_params /etc/nginx/uwsgi_params
 COPY ./run.sh /run.sh
 
 ENV LISTEN_PORT=21099
-ENV APP_HOST=app
+ENV APP_HOST=server
 ENV APP_PORT=21097
 
 USER root
