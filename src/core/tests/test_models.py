@@ -38,14 +38,14 @@ class ModelTests(TestCase):
     def test_new_user_email_normalized(self):
         '''Test email is normalized for new users'''
         sample_emails = [
-            ['Test1@Example.com', 'Test1@example.com'],
-            ['test2@Example.com', 'test2@example.com'],
-            ['TEST3@ExaMple.com', 'TEST3@example.com'],
-            ['TEST4@EXAMPLE.COM', 'TEST4@example.com'],
+            ['Test1@Example.com', '0919191919', 'Test1@example.com'],
+            ['test2@Example.com', '0202020202', 'test2@example.com'],
+            ['TEST3@ExaMple.com', '0303030303', 'TEST3@example.com'],
+            ['TEST4@EXAMPLE.COM', '0404040404', 'TEST4@example.com'],
         ]
 
-        for email, expected in sample_emails:
-            user = create_user(email=email)
+        for email, phone, expected in sample_emails:
+            user = create_user(email=email, phone_number=phone)
             self.assertEqual(user.email, expected)
 
     def test_new_user_without_require_field_raises_error(self):

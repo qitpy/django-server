@@ -1,5 +1,6 @@
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
+import re
 
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -18,10 +19,19 @@ class UserManager(BaseUserManager):
             raise ValueError('User must have an email address')
         if not name:
             raise ValueError('User must have a name')
+        if not password:
+            raise ValueError('User must have a password')
+
+        if not re.fullmatch('^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,32}', password):
+            raise ValueError('Password must be have at least ' \
+                + 'one normal character, ' \
+                + 'one uppercase characters ' \
+                + 'and one number')
+
 
         user = self.model(
             phone_number=phone_number,
-            email=email,
+            email=self.normalize_email(email),
             name=name,
         )
         user.set_password(password)
