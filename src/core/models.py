@@ -19,8 +19,6 @@ class UserManager(BaseUserManager):
         if not name:
             raise ValueError('User must have a name')
 
-        print('======', phone_number, '======')
-
         user = self.model(
             phone_number=phone_number,
             email=email,
@@ -46,6 +44,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255, blank=False, unique=False)
     is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=True)
 
     objects = UserManager()
 

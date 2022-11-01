@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     'phonenumber_field',
 
     'core',
+    'user',
+    'todo',
 ]
 
 MIDDLEWARE = [
