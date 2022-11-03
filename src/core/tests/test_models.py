@@ -8,13 +8,12 @@ from core import models
 from unittest.mock import patch
 
 
-def create_user(phone_number='0912345678',
-                email='user@example.com',
+def create_user(email='user@example.com',
                 name='username',
                 password='TestPass123',):
     '''create and return a new user'''
     return get_user_model().objects.create_user(
-        phone_number, email, name, password)
+        email, name, password)
 
 
 class ModelTests(TestCase):
@@ -23,14 +22,12 @@ class ModelTests(TestCase):
     def test_create_user_successful(self):
         '''test creating a user with an email is successful'''
         email = 'test@example.com'
-        phone_number = '022233566'
         name = 'TestName'
         password = 'TestPass123'
 
         user = get_user_model().objects.create_user(
-            phone_number, email, name, password,
+            email, name, password,
         )
-        self.assertEqual(user.phone_number, phone_number)
         self.assertEqual(user.email, email)
         self.assertEqual(user.name, name)
         self.assertTrue(user.check_password(password))
@@ -38,23 +35,20 @@ class ModelTests(TestCase):
     def test_new_user_email_normalized(self):
         '''Test email is normalized for new users'''
         sample_emails = [
-            ['Test1@Example.com', '0919191919', 'Test1@example.com'],
-            ['test2@Example.com', '0202020202', 'test2@example.com'],
-            ['TEST3@ExaMple.com', '0303030303', 'TEST3@example.com'],
-            ['TEST4@EXAMPLE.COM', '0404040404', 'TEST4@example.com'],
+            ['Test1@Example.com', 'Test1@example.com'],
+            ['test2@Example.com', 'test2@example.com'],
+            ['TEST3@ExaMple.com', 'TEST3@example.com'],
+            ['TEST4@EXAMPLE.COM', 'TEST4@example.com'],
         ]
 
-        for email, phone, expected in sample_emails:
-            user = create_user(email=email, phone_number=phone)
+        for email, expected in sample_emails:
+            user = create_user(email=email)
             self.assertEqual(user.email, expected)
 
     def test_new_user_without_require_field_raises_error(self):
         '''test that creating a user without an email raises a ValueError'''
         with self.assertRaises(ValueError):
             create_user(email='')
-
-        with self.assertRaises(ValueError):
-            create_user(phone_number='')
 
         with self.assertRaises(ValueError):
             create_user(name='')
@@ -81,10 +75,16 @@ class ModelTests(TestCase):
     def test_create_superuser(self):
         """Test creating a superuser"""
         user = get_user_model().objects.create_superuser(
-            phone_number='0910910910',
             email='super@example.com',
             name='super',
             password='PassWord123'
         )
 
         self.assertTrue(user.is_superuser)
+
+    def test_new_user_must_be_activate(self):
+        '''test create new user must be enable by email'''
+        user = create_user(email='active@example.com')
+
+        self.assertTrue(user.is_active, False)
+        self.assertIsNotNone(user.verify_code)

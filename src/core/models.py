@@ -1,6 +1,7 @@
 from django.db import models
-from phonenumber_field.modelfields import PhoneNumberField
 import re
+import random
+import string
 
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -11,10 +12,13 @@ from django.contrib.auth.models import (
 
 class UserManager(BaseUserManager):
     '''Manager for user'''
-    def create_user(self, phone_number, email, name, password=None):
+
+    def random_verify_code(self):
+        verify_code = ''.join(random.choice(string.ascii_letters) for i in range(20))
+        return verify_code;
+
+    def create_user(self, email, name, password=None):
         '''create, save and return a new user'''
-        if not phone_number:
-            raise ValueError('User must have an phone number')
         if not email:
             raise ValueError('User must have an email address')
         if not name:
@@ -28,20 +32,22 @@ class UserManager(BaseUserManager):
                 + 'one uppercase characters ' \
                 + 'and one number')
 
+        verify_code = self.random_verify_code()
 
         user = self.model(
-            phone_number=phone_number,
             email=self.normalize_email(email),
             name=name,
+            verify_code=verify_code,
         )
+
         user.set_password(password)
         user.save(using=self._db)
 
         return user
 
-    def create_superuser(self, phone_number, email, name, password=None):
+    def create_superuser(self, email, name, password=None):
         '''create and return a new superuser'''
-        user = self.create_user(phone_number, email, name, password)
+        user = self.create_user(email, name, password)
         user.is_superuser = True
         user.save(using=self._db)
 
@@ -50,15 +56,16 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     '''User in the system'''
-    phone_number = PhoneNumberField(region='VN', unique=True, max_length=255)
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255, blank=False, unique=False)
     is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    password_attempt_times = models.IntegerField(default=0)
+    verify_code = models.CharField(max_length=30, null=True)
 
     objects = UserManager()
-
-    USERNAME_FIELD = 'phone_number'
+    USERNAME_FIELD = 'email'
 
     def __str__(self):
         return self.email

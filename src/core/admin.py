@@ -8,10 +8,10 @@ from core import models
 class UserAdmin(BaseUserAdmin):
     '''Define the admin pages for users'''
     ordering = ['id']
-    list_display = ['phone_number', 'email', 'name']
+    list_display = ['email', 'name']
     list_filter = ('is_active', 'is_superuser',)
     fieldsets = (
-        (None, {'fields': ('phone_number', 'email', 'name', 'password')}),
+        (None, {'fields': ('email', 'name', 'password')}),
         (
             _('Permissions'),
             {
@@ -25,7 +25,6 @@ class UserAdmin(BaseUserAdmin):
         (None, {
             'classes': ('wide',),
             'fields': (
-                'phone_number',
                 'email',
                 'name',
                 'password1',
@@ -38,4 +37,5 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(models.User, UserAdmin)
+
 # admin.site.register(models.Todo)

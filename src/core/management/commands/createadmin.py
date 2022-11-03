@@ -14,7 +14,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **option):
         '''create new superuser'''
-        phone_number = input('phone_number: ')
         email = input('email: ')
         name = input('name: ')
         password = None
@@ -25,7 +24,7 @@ class Command(BaseCommand):
             password_confirm = input('confirm password: ')
 
         user = get_user_model().objects.create_superuser(
-            phone_number, email, name, password
+            email, name, password
         )
 
         # notify that command is successful

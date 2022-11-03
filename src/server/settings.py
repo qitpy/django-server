@@ -52,8 +52,6 @@ INSTALLED_APPS = [
 
     'drf_spectacular',
 
-    'phonenumber_field',
-
     'core',
     'user',
     'todo',
