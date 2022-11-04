@@ -16,10 +16,8 @@ from core.models import (
 )
 
 
-# USER_REGISTER_URL = reverse('user:register')
-USER_REGISTER_URL = 'aa'
-# USER_LOGIN_URL = reverse('user:login')
-USER_LOGIN_URL = 'bb'
+USER_REGISTER_URL = reverse('user:register')
+USER_LOGIN_URL = reverse('user:login')
 def user_verify_email_url(verify_code):
     '''create and return verify email request url'''
     return reverse('user:verify-email', args=[verify_code])

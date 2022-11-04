@@ -157,3 +157,15 @@ REST_FRAMEWORK = {
 SPECTACULAR_SETTINGS= {
     'COMPONENT_SPLIT_REQUEST': True,
 }
+
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'maitoserver@gmail.com'
+EMAIL_HOST_PASSWORD = 'ksefchwrppqmeeny'
+EMAIL_USE_TLS = True
+# EMAIL_USE_SSL =
+# EMAIL_TIMEOUT =
+# EMAIL_SSL_KEYFILE =
+# EMAIL_SSL_CERTFILE =

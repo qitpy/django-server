@@ -62,7 +62,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
 
     password_attempt_times = models.IntegerField(default=0)
-    verify_code = models.CharField(max_length=30, null=True)
+    verify_code = models.CharField(max_length=255, null=True)
 
     objects = UserManager()
     USERNAME_FIELD = 'email'

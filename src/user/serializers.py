@@ -7,6 +7,7 @@ from django.contrib.auth import (
 )
 from django.utils.translation import gettext as _
 from rest_framework import serializers
+from django.core.mail import send_mail
 
 import re
 
@@ -33,11 +34,8 @@ class UserSerializer(serializers.ModelSerializer):
                 + 'one uppercase characters ' \
                 + 'and one number')
 
-        # send token sdt
+        user = get_user_model().objects.create_user(**validated_data)
 
-        # send token email
-
-        return get_user_model().objects.create_user(**validated_data)
 
 
 class LoginUserSerializer(serializers.Serializer):
