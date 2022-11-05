@@ -18,9 +18,9 @@ from core.models import (
 
 USER_REGISTER_URL = reverse('user:register')
 USER_LOGIN_URL = reverse('user:login')
-def user_verify_email_url(verify_code):
+def user_verify_email_url(query_params):
     '''create and return verify email request url'''
-    return reverse('user:verify-email', args=[verify_code])
+    return reverse('user:verify-email', args=[query_params])
 
 email_example = 'email@yopmail.com'
 name_example ='username example'
@@ -82,11 +82,11 @@ class AuthenticationApiTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].recipients[0], email_example)
 
-    @patch('core.models.UserManager.random_verify_code')
-    def test_create_user_confirm_successfully(self, patched_verify_code_random):
+    @patch('core.models.UserManager.random_verify_email_code')
+    def test_create_user_confirm_successfully(self, patched_verify_email_code_random):
         '''test that user verify email successfully'''
-        verify_code_patched = 'THISisVERIFYcodeFORemailVERIFYING'
-        patched_verify_code_random.return_value = verify_code_patched
+        verify_email_code = 'THISisVERIFYcodeFORemailVERIFYING'
+        patched_verify_email_code_random.return_value = verify_email_code
         user = create_user()
         payload = {
             'email': email_example,
@@ -95,8 +95,12 @@ class AuthenticationApiTests(TestCase):
         res = self.client.post(USER_LOGIN_URL, payload)
         self.assertEqual(res.status_code, 403)
 
+        query_params = {
+            'email': email_example,
+            'code': verify_email_code,
+        }
         res_verify_email = self.client.get(
-            user_verify_email_url(verify_code_patched)
+            user_verify_email_url(query_params)
         )
         user.refresh_from_db()
         self.assertEqual(res_verify_email.status_code, 200)
@@ -104,14 +108,35 @@ class AuthenticationApiTests(TestCase):
         res = self.client.post(USER_LOGIN_URL, payload)
         self.assertEqual(res.status_code, 200)
 
-    @patch('core.models.UserManager.random_verify_code')
-    def test_login_failed_10_time_will_be_block(self, patched_verify_code_random):
+    @patch('core.models.UserManager.random_verify_email_code')
+    @patch('user.utils.is_expired_verify_email_code')
+    def test_time_confirm_email_expired(self, patched_verify_email_code, patched_expired_verify_email):
+        '''
+        test time confirm email will be expired in 10min
+        user need to resend confirm email to verify
+        '''
+        verify_email_code = 'THISisVERIFYcodeFORemailVERIFYING'
+        patched_verify_email_code.return_value = verify_email_code
+        patched_expired_verify_email.return_value = True
+        user = create_user()
+        query_params = {
+            'email': email_example,
+            'code': verify_email_code,
+        }
+        res_verify_email = self.client.get(
+            user_verify_email_url(query_params)
+        )
+
+        self.assertEqual(res_verify_email.status_code, 400)
+
+    @patch('core.models.UserManager.random_verify_email_code')
+    def test_login_failed_10_time_will_be_block(self, patched_verify_email_code_random):
         '''
         test that will block account in case user attempt
         to input many time password, for security
         '''
-        verify_code_patched = 'THISisVERIFYcodeFORemailVERIFYING'
-        patched_verify_code_random.return_value = verify_code_patched
+        verify_email_code = 'THISisVERIFYcodeFORemailVERIFYING'
+        patched_verify_email_code_random.return_value = verify_email_code
         email = 'attempt@yopmail.com'
         user = create_user(email=email)
         payload_wrong_password = {
@@ -122,8 +147,12 @@ class AuthenticationApiTests(TestCase):
             'email': email,
             'password': password_example,
         }
+        query_params = {
+            'email': email_example,
+            'code': verify_email_code,
+        }
         res_verify_email = self.client.get(
-            user_verify_email_url(verify_code_patched)
+            user_verify_email_url(query_params)
         )
         self.assertEqual(res_verify_email.status_code, 200)
 

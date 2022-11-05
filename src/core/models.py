@@ -13,9 +13,9 @@ from django.contrib.auth.models import (
 class UserManager(BaseUserManager):
     '''Manager for user'''
 
-    def random_verify_code(self):
-        verify_code = ''.join(random.choice(string.ascii_letters) for i in range(20))
-        return verify_code;
+    def random_verify_email_code(self):
+        verify_email_code = ''.join(random.choice(string.ascii_letters) for i in range(20))
+        return verify_email_code;
 
     def create_user(self, email, name, password=None):
         '''create, save and return a new user'''
@@ -32,12 +32,12 @@ class UserManager(BaseUserManager):
                 + 'one uppercase characters ' \
                 + 'and one number')
 
-        verify_code = self.random_verify_code()
+        verify_email_code = self.random_verify_email_code()
 
         user = self.model(
             email=self.normalize_email(email),
             name=name,
-            verify_code=verify_code,
+            verify_email_code=verify_email_code,
         )
 
         user.set_password(password)
@@ -62,7 +62,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
 
     password_attempt_times = models.IntegerField(default=0)
-    verify_code = models.CharField(max_length=255, null=True)
+    verify_email_code = models.CharField(max_length=255, null=True)
+    verify_start_at = models.DateTimeField(blank=True, null=True)
 
     objects = UserManager()
     USERNAME_FIELD = 'email'

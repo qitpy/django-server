@@ -87,4 +87,4 @@ class ModelTests(TestCase):
         user = create_user(email='active@example.com')
 
         self.assertTrue(user.is_active, False)
-        self.assertIsNotNone(user.verify_code)
+        self.assertIsNotNone(user.verify_email_code)

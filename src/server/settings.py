@@ -149,6 +149,7 @@ MEDIA_ROOT = '/vol/web/media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'core.User'
+AUTH_VERIFY_EMAIL_EXPIRED_MINUTES = 10
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
