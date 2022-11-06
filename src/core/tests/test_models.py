@@ -8,12 +8,9 @@ from core import models
 from unittest.mock import patch
 
 
-def create_user(email='user@example.com',
-                name='username',
-                password='TestPass123',):
+def create_user(email='user@example.com', name='user name'):
     '''create and return a new user'''
-    return get_user_model().objects.create_user(
-        email, name, password)
+    return get_user_model().objects.create_user(token_jwt)
 
 
 class ModelTests(TestCase):

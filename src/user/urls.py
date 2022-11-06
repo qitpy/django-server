@@ -1,14 +1,15 @@
 '''
 URL mapping for user API
 '''
-from django.urls import path
+from django.urls import path, re_path
+from knox import views as knox_views
 from user import views
 
 
 app_name = 'user'
 urlpatterns = [
-    path('register/', views.RegisterUserView.as_view(), name='register'),
-    path('verify-email/', views.VerifyEmailView, name='verify-email'),
-    path('login/', views.LoginUserView.as_view(), name='login'),
-    path('me/', views.ManageUserView.as_view(), name='me'),
+    path('register-by-access-token/social/google-oauth2/', views.LoginWithGoogle.as_view(), name='login_with_google'),
+    path('authentication-test/', views.authentication_test),
+    path('logout/', knox_views.LogoutView.as_view(), name='knox_logout'),
+    path('logoutall/', knox_views.LogoutAllView.as_view(), name='knox_logoutall'),
 ]

@@ -1,57 +1,105 @@
-'''
-Views for the user API
-'''
-from rest_framework import generics, authentication, permissions, status
-from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.settings import api_settings
-from rest_framework.decorators import api_view
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-
+from google.oauth2 import id_token
+from google.auth.transport import requests
+from requests.exceptions import HTTPError
+from knox.models import AuthToken
 from django.contrib.auth import get_user_model
-
-from user.serializers import (
-    UserSerializer,
-    LoginUserSerializer,
-)
-
-class RegisterUserView(generics.CreateAPIView):
-    '''Create a new user in the system'''
-    serializer_class = UserSerializer
+from django.contrib.auth import authenticate, login
+from rest_framework.permissions import AllowAny
+from knox.views import LoginView as KnoxLoginView
 
 
-class LoginUserView(ObtainAuthToken):
-    '''Login user return a token'''
-    serializer_class = LoginUserSerializer
-    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+class LoginWithGoogle(KnoxLoginView):
+    permission_classes = (AllowAny,)
 
-
-class ManageUserView(generics.RetrieveUpdateAPIView):
-    '''Manage the authenticated user'''
-    serializer_class = UserSerializer
-    authentication_classes = [authentication.TokenAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_object(self):
-        '''retrieve and return the authenticated user'''
-        return self.request.user
-
-@api_view(['GET'])
-def VerifyEmailView(request):
-    '''Verify email view'''
-    params = request.query_params
-    email = params['email']
-    verify_email_code = params['code']
-    user = get_user_model().objects.get(email=email)
-
-    if user:
-        if user.verify_email_code is verify_email_code:
-            return Response(
-                {"message": "you successfully verify your email"},
-                status=status.HTTP_200_OK,
+    def post(self, request, format=None):
+        email = None
+        name = None
+        try:
+            google_credential = request.data.get('credential')
+            CLIENT_ID = '451670753998-ct3drfnm9ote4v5b03b4s0aa3206l64p.apps.googleusercontent.com'
+            user_info = id_token.verify_oauth2_token(
+                google_credential, requests.Request(), CLIENT_ID
             )
+            email = user_info['email']
+            name = user_info['name']
+        except ValueError:
+            return Response(
+                {
+                    'errors': {
+                        'token': 'Invalid token'
+                        }
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user, is_new_user = get_user_model().objects.get_or_create(
+            email=email, name=name
+        )
+        login(request, user)
+        return super(LoginWithGoogle, self).post(request, format=None)
+
+# @api_view(['POST'])
+# @permission_classes([AllowAny])
+# def register_by_access_token(request, backend):
+#     email = None
+#     name = None
+#     try:
+#         # Specify the CLIENT_ID of the app that accesses the backend:
+#         google_credential = request.data.get('credential')
+#         CLIENT_ID = '451670753998-ct3drfnm9ote4v5b03b4s0aa3206l64p.apps.googleusercontent.com'
+#         user_info = id_token.verify_oauth2_token(
+#             google_credential, requests.Request(), CLIENT_ID
+#         )
+
+#         # Or, if multiple clients access the backend server:
+#         # idinfo = id_token.verify_oauth2_token(token, requests.Request())
+#         # if idinfo['aud'] not in [CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]:
+#         #     raise ValueError('Could not verify audience.')
+
+#         # If auth request is from a G Suite domain:
+#         # if idinfo['hd'] != GSUITE_DOMAIN_NAME:
+#         #     raise ValueError('Wrong hosted domain.')
+
+#         # ID token is valid. Get the user's Google Account ID from the decoded token.
+#         email = user_info['email']
+#         name = user_info['name']
+#     except ValueError:
+#         # Invalid token
+#         return Response(
+#             {
+#                 'errors': {
+#                     'token': 'Invalid token'
+#                     }
+#             },
+#             status=status.HTTP_400_BAD_REQUEST,
+#         )
+
+#     user, is_new_user = get_user_model().objects.get_or_create(
+#         email=email, name=name
+#     )
+
+#     login(request, user)
+
+#     token, created = AuthToken.objects.get_or_create(user=user)
+#     return Response(
+#         {
+#             'token': token,
+#             'created': created,
+#         },
+#         status=status.HTTP_200_OK,
+#         )
+
+
+@api_view(['GET', 'POST'])
+def authentication_test(request):
+    print(request.user)
     return Response(
-        {"message": "this link is expired or something wrong, \
-            please re-confirm your email by request to \
-                send confirm email again"},
-        status=status.HTTP_400_BAD_REQUEST,
+        {
+            'message': "User successfully authenticated"
+        },
+        status=status.HTTP_200_OK,
     )
