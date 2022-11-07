@@ -21,6 +21,8 @@ from drf_spectacular.views import (
 )
 from django.conf.urls.static import static
 from django.conf import settings
+# views.py
+from server.schema import KnoxTokenScheme
 
 
 urlpatterns = [
@@ -32,8 +34,6 @@ urlpatterns = [
         name='api-docs'
     ),
     path('api/user/', include('user.urls')),
-
-    # path('api/user/', include(''))
 ]
 
 if settings.DEBUG:
