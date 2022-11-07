@@ -1,0 +1,23 @@
+name: maito-server
+
+on:
+  push:
+    branches: [master]
+  # pull_request:
+  #   branches: [ main ]
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build
+        run: docker-compose build
+      # - name: Connect to DB
+      #   run: docker-compose run -rm app sh -c "python manage.py wait_for_db"
+      # - name: Test & Lint
+      #   run: docker-compose run --rm app sh -c "python manage.py"
+      # - name: Lint
+      #   run: docker-compose run --rm app sh -c "flake8"
