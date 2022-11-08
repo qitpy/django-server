@@ -6,3 +6,5 @@ psycopg2>=2.8.6,<2.9
 django-rest-knox
 google-auth
 google-api-python-client
+flake8
+coverage
