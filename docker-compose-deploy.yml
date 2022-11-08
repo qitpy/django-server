@@ -1,0 +1,56 @@
+version: '3.9'
+
+services:
+  src:
+    depends_on:
+      - database
+    build:
+      context: .
+    restart: unless-stopped
+    volumes:
+      - static-data:/vol/web
+    environment:
+      - DB_HOST=database
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - SECRET_KEY=${DJANGO_SECRET_KEY}
+      - ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+
+  pgadmin:
+    container_name: maito_pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - "${PGADMIN_PORT:-21098}:80"
+    restart: unless-stopped
+
+  database:
+    image: postgres:13-alpine
+    volumes:
+      - maito-db-server:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+
+  proxy:
+    build:
+      context: ./proxy
+    restart: unless-stopped
+    depends_on:
+      - src
+    ports:
+      - 21099:21099
+    volumes:
+      - static-data:/vol/static
+
+volumes:
+  maito-db-server:
+  pgadmin:
+  static-data:

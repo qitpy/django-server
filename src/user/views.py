@@ -12,6 +12,7 @@ from knox.views import LoginView as KnoxLoginView
 from knox.auth import TokenAuthentication
 from knox.models import AuthToken
 from rest_framework import serializers
+import os
 
 
 class LoginWithGoogle(KnoxLoginView):
@@ -22,7 +23,7 @@ class LoginWithGoogle(KnoxLoginView):
         name = None
         try:
             google_credential = request.data.get('credential')
-            CLIENT_ID = '451670753998-ct3drfnm9ote4v5b03b4s0aa3206l64p.apps.googleusercontent.com'
+            CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID'),
             user_info = id_token.verify_oauth2_token(
                 google_credential, requests.Request(), CLIENT_ID
             )

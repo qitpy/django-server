@@ -14,10 +14,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build
-        run: docker-compose build
-      # - name: Connect to DB
-      #   run: docker-compose run -rm app sh -c "python manage.py wait_for_db"
-      # - name: Test & Lint
-      #   run: docker-compose run --rm app sh -c "python manage.py"
-      # - name: Lint
-      #   run: docker-compose run --rm app sh -c "flake8"
+        run: docker-compose -f docker-compose-deploy.yml build
+      - name: Test
+        run: docker-compose -f docker-compose-deploy.yml run --rm src -c "coverage run manage.py test"
+      - name: Report
+        run: docker-compose -f docker-compose-deploy.yml run --rm src -c "coverage report"
+      - name: Lint
+        run: docker-compose -f docker-compose-deploy.yml run --rm src -c "flake8"
+      - name: run
+        run: docker-compose up -d
