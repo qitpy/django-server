@@ -4,10 +4,10 @@ LABEL maintainer="maitocode.com"
 
 ENV PYTHONUNBUFFERED 1
 
-COPY ./requirements.txt /tmp/requirements.txt
-COPY ./requirements.dev.txt /tmp/requirements.dev.txt
-COPY ./scripts /scripts
 COPY ./src /src
+COPY ./scripts /scripts
+COPY ./requirements.txt /requirements/requirements.txt
+COPY ./requirements.dev.txt /requirements/requirements.dev.txt
 WORKDIR /src
 EXPOSE 21099
 
@@ -17,9 +17,9 @@ RUN python -m venv /py && \
     apk add --update --no-cache postgresql-client && \
     apk add --update --no-cache --virtual .tmp-build-deps \
         build-base postgresql-dev musl-dev zlib zlib-dev linux-headers && \
-    /py/bin/pip install -r /tmp/requirements.txt && \
+    /py/bin/pip install -r /requirements/requirements.txt && \
     if [ $DEV = "true" ]; \
-        then /py/bin/pip install -r /tmp/requirements.dev.txt ; \
+        then /py/bin/pip install -r /requirements/requirements.dev.txt ; \
     fi && \
     rm -rf /tmp && \
     apk del .tmp-build-deps && \

@@ -16,10 +16,6 @@ jobs:
       - name: Build
         run: docker-compose -f docker-compose-deploy.yml build
       - name: Test checking
-        run: docker-compose -f docker-compose-deploy.yml run --rm src sh -c "coverage run manage.py test"
-      - name: Report checking
-        run: docker-compose -f docker-compose-deploy.yml run --rm src sh -c "coverage report"
-      - name: Flake8 checking
-        run: docker-compose -f docker-compose-deploy.yml run --rm src sh -c "flake8 --exclude=core/migrations/"
+        run: docker-compose -f docker-compose-deploy.yml run --rm src sh -c "test.sh"
       - name: run
         run: docker-compose up -d
