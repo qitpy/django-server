@@ -15,11 +15,11 @@ jobs:
         uses: actions/checkout@v2
       - name: Build
         run: docker-compose -f docker-compose-deploy.yml build
-      - name: Test
-        run: docker-compose -f docker-compose-deploy.yml run --rm src -c "coverage run manage.py test"
-      - name: Report
-        run: docker-compose -f docker-compose-deploy.yml run --rm src -c "coverage report"
-      - name: Lint
-        run: docker-compose -f docker-compose-deploy.yml run --rm src -c "flake8"
+      - name: Test checking
+        run: docker-compose -f docker-compose-deploy.yml run --rm src sh -c "coverage run manage.py test"
+      - name: Report checking
+        run: docker-compose -f docker-compose-deploy.yml run --rm src sh -c "coverage report"
+      - name: Flake8 checking
+        run: docker-compose -f docker-compose-deploy.yml run --rm src sh -c "flake8 --exclude=core/migrations/"
       - name: run
         run: docker-compose up -d
