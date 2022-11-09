@@ -1,2 +1,2 @@
-flake8
-coverage
+flake8==5.0.4
+coverage==6.5.0

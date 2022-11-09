@@ -6,7 +6,7 @@ ENV PYTHONUNBUFFERED 1
 
 COPY ./src /src
 COPY ./scripts /scripts
-COPY ./requirements.txt /requirements/requirements.txt
+COPY requirements.release.txt /requirements/requirements.txt
 COPY ./requirements.dev.txt /requirements/requirements.dev.txt
 WORKDIR /src
 EXPOSE 21099
@@ -17,7 +17,7 @@ RUN python -m venv /py && \
     apk add --update --no-cache postgresql-client && \
     apk add --update --no-cache --virtual .tmp-build-deps \
         build-base postgresql-dev musl-dev zlib zlib-dev linux-headers && \
-    /py/bin/pip install -r /requirements/requirements.txt && \
+    /py/bin/pip install -r /requirements/requirements.release.txt && \
     if [ $DEV = "true" ]; \
         then /py/bin/pip install -r /requirements/requirements.dev.txt ; \
     fi && \
@@ -31,7 +31,7 @@ RUN python -m venv /py && \
         mkdir -p /vol/web/static && \
         chown -R django-user:django-user /vol && \
         chmod -R 755 /vol && \
-        chmod -R +x /scripts
+        chmod -R +x /scripts /src/.flake8 /src/.coverage
 
 ENV PATH="/scripts:/py/bin:$PATH"
 
