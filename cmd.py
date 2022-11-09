@@ -11,7 +11,7 @@ P = '\033[35m'  # purple
 
 def get_user_input() -> int:
     print("\n\t\t\t* " + R + "♥" + W + " * * * * * * * * * * * * * * * * * * *")
-    print('\t\t\t*   Developer command Line interface:\t*')
+    print("\t\t\t*   " + G + "Developer" + W + " Command Line Interface:\t*")
     print('\t\t\t*\t\t\t\t\t*')
     print('\t\t\t*\t1 - BUILD\t\t\t*')
     print('\t\t\t*\t2 - RUN\t\t\t\t*')

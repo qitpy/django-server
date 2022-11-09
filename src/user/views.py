@@ -1,17 +1,20 @@
 from rest_framework import status
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
+
+from rest_framework.decorators import (
+    api_view,
+    authentication_classes,
+    permission_classes
+)
+
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from google.oauth2 import id_token
 from google.auth.transport import requests
-from requests.exceptions import HTTPError
+
 from django.contrib.auth import get_user_model
-from django.contrib.auth import login, logout
-from rest_framework.permissions import AllowAny
+from django.contrib.auth import login
 from knox.views import LoginView as KnoxLoginView
 from knox.auth import TokenAuthentication
-from knox.models import AuthToken
-from rest_framework import serializers
 import os
 
 
@@ -19,8 +22,6 @@ class LoginWithGoogle(KnoxLoginView):
     permission_classes = (AllowAny,)
 
     def post(self, request, format=None):
-        email = None
-        name = None
         try:
             google_credential = request.data.get('credential')
             CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID'),
@@ -34,7 +35,7 @@ class LoginWithGoogle(KnoxLoginView):
                 {
                     'errors': {
                         'token': 'Invalid token'
-                        }
+                    }
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -63,8 +64,8 @@ class LoginWithGoogle(KnoxLoginView):
 
 
 @api_view(['GET', 'POST'])
-@authentication_classes([TokenAuthentication,])
-@permission_classes([IsAuthenticated,])
+@authentication_classes([TokenAuthentication, ])
+@permission_classes([IsAuthenticated, ])
 def authentication_test(request):
     print(request.user)
     return Response(

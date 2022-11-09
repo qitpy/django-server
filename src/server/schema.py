@@ -2,6 +2,7 @@
 from django.utils.translation import gettext_lazy as _
 from drf_spectacular.extensions import OpenApiAuthenticationExtension
 
+
 class KnoxTokenScheme(OpenApiAuthenticationExtension):
     target_class = 'knox.auth.TokenAuthentication'
     name = 'knoxTokenAuth'

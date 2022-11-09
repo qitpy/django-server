@@ -21,7 +21,6 @@ from drf_spectacular.views import (
 )
 from django.conf.urls.static import static
 from django.conf import settings
-# views.py
 from server.schema import KnoxTokenScheme
 
 
@@ -35,6 +34,9 @@ urlpatterns = [
     ),
     path('api/user/', include('user.urls')),
 ]
+
+if KnoxTokenScheme:
+    print("Added Swagger authorization")
 
 if settings.DEBUG:
     urlpatterns += static(
