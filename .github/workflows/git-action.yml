@@ -18,12 +18,13 @@ jobs:
         run: docker-compose run --rm src sh -c "python manage.py test"
       - name: run test script
         run: docker-compose run --rm src sh -c "flake8 --exclude=core/migrations/"
-#  deploy:
-#    runs-on: self-hosted
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v2
-#      - name: Build
-#        run: docker-compose -f docker-compose-deploy.yml build
-#      - name: run
-#        run: docker-compose up -d
+  deploy:
+    needs: test
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build
+        run: docker-compose -f docker-compose-deploy.yml build
+      - name: run
+        run: docker-compose up -d

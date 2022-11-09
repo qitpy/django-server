@@ -1,3 +1,2 @@
-coverage run manage.py test
-coverage report
-flake8 --exclude=core/migrations/
+#!/bin/sh
+docker-compose run --rm src sh -c "python manage.py test"
