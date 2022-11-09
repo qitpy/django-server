@@ -7,15 +7,21 @@ on:
   #   branches: [ main ]
 
 jobs:
-  build:
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: test prepare
+        run: docker-compose build
+      - name: run test script
+        run: docker-compose run --rm src sh -c "test.sh"
+  deploy:
     runs-on: self-hosted
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build
         run: docker-compose -f docker-compose-deploy.yml build
-      - name: Test checking
-        run: docker-compose -f docker-compose-deploy.yml run --rm src sh -c "test.sh"
       - name: run
         run: docker-compose up -d
