@@ -6,8 +6,8 @@ ENV PYTHONUNBUFFERED 1
 
 COPY ./src /src
 COPY ./scripts /scripts
-COPY requirements.release.txt /requirements/requirements.txt
-COPY ./requirements.dev.txt /requirements/requirements.dev.txt
+COPY requirements.release.txt /requirements/requirements.release.txt
+COPY requirements.dev.txt /requirements/requirements.dev.txt
 WORKDIR /src
 EXPOSE 21099
 
