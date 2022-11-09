@@ -1,6 +1,11 @@
 import subprocess
 import shlex
 
+commands = [
+
+]
+
+
 W = '\033[0m'  # white (normal)
 R = '\033[31m'  # red
 G = '\033[32m'  # green
