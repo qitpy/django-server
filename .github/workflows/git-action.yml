@@ -15,9 +15,7 @@ jobs:
       - name: test prepare
         run: docker-compose build
       - name: run test script
-        run: docker-compose run --rm src sh -c "coverage run manage.py test"
-      - name: run test script
-        run: docker-compose run --rm src sh -c "coverage report"
+        run: docker-compose run --rm src sh -c "python manage.py test"
       - name: run test script
         run: docker-compose run --rm src sh -c "flake8 --exclude=core/migrations/"
 #  deploy:
