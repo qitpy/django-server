@@ -15,13 +15,17 @@ jobs:
       - name: test prepare
         run: docker-compose build
       - name: run test script
-        run: docker-compose run --rm src sh -c "test.sh"
-  deploy:
-    runs-on: self-hosted
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Build
-        run: docker-compose -f docker-compose-deploy.yml build
-      - name: run
-        run: docker-compose up -d
+        run: docker-compose run --rm src sh -c "coverage run manage.py test"
+      - name: run test script
+        run: docker-compose run --rm src sh -c "coverage report"
+      - name: run test script
+        run: docker-compose run --rm src sh -c "flake8 --exclude=core/migrations/"
+#  deploy:
+#    runs-on: self-hosted
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v2
+#      - name: Build
+#        run: docker-compose -f docker-compose-deploy.yml build
+#      - name: run
+#        run: docker-compose up -d
