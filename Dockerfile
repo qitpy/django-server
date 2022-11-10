@@ -17,9 +17,10 @@ RUN python -m venv /py && \
     apk add --update --no-cache postgresql-client && \
     apk add --update --no-cache --virtual .tmp-build-deps \
         build-base postgresql-dev musl-dev zlib zlib-dev linux-headers && \
-    /py/bin/pip install -r /requirements/requirements.release.txt && \
     if [ $DEV = "true" ]; \
         then /py/bin/pip install -r /requirements/requirements.dev.txt ; \
+    else \
+        /py/bin/pip install -r /requirements/requirements.release.txt; \
     fi && \
     rm -rf /tmp && \
     apk del .tmp-build-deps && \
