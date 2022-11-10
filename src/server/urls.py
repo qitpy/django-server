@@ -21,8 +21,8 @@ from drf_spectacular.views import (
 )
 from django.conf.urls.static import static
 from django.conf import settings
-from server.schema import KnoxTokenScheme
 
+from server.schema import KnoxTokenScheme
 
 urlpatterns = [
     path('admin/', admin.site.urls),
