@@ -9,7 +9,7 @@ COPY ./scripts /scripts
 COPY requirements.release.txt /requirements/requirements.release.txt
 COPY requirements.dev.txt /requirements/requirements.dev.txt
 WORKDIR /src
-EXPOSE 21099
+EXPOSE $PORT_EXPOSE
 
 ARG DEV=false
 RUN python -m venv /py && \

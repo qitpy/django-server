@@ -6,51 +6,56 @@ services:
       - database
     build:
       context: .
+      args:
+        - PORT_EXPOSE=${API_SERVICE_PORT}
     restart: unless-stopped
     volumes:
-      - static-data:/vol/web
+      - maito-static-data:/vol/web
     environment:
+      - API_SERVICE_PORT=${API_SERVICE_PORT}
       - DB_HOST=database
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
       - SECRET_KEY=${DJANGO_SECRET_KEY}
       - ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+    networks:
+      - maito-server
+      - maito-proxy_maito-proxy
 
   pgadmin:
-    container_name: maito_pgadmin
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_SERVER_MODE: 'True'
     volumes:
-      - pgadmin:/var/lib/pgadmin
+      - maito-pgadmin:/var/lib/pgadminz
     ports:
-      - "${PGADMIN_PORT:-21098}:80"
+      - "${PGADMIN_PORT}:80"
     restart: unless-stopped
+    networks:
+      - maito-server
+      - maito-proxy_maito-proxy
 
   database:
     image: postgres:13-alpine
     volumes:
-      - maito-db-server:/var/lib/postgresql/data
+      - maito-db:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASS}
-
-  proxy:
-    build:
-      context: ./proxy
-    restart: unless-stopped
-    depends_on:
-      - src
-    ports:
-      - 21099:21099
-    volumes:
-      - static-data:/vol/static
+    networks:
+      - maito-server
 
 volumes:
-  maito-db-server:
-  pgadmin:
-  static-data:
+  maito-db:
+  maito-pgadmin:
+  maito-static-data:
+networks:
+  maito-server:
+    driver: bridge
+  maito-proxy_maito-proxy:
+    external: true

@@ -13,6 +13,9 @@ COMMANDS = [
     ('TEST', 'docker-compose run --rm src sh -c "python manage.py test"'),
     ('COVERAGE', 'docker-compose run --rm src sh -c "coverage run manage.py test && coverage report"'),
     ('FLAKE8', 'docker-compose run --rm src sh -c flake8 --exclude=core/migrations/'),
+    ('PRODUCTION/BUILD', 'docker-compose -f docker-compose-deploy.yml build'),
+    ('PRODUCTION/RUN', 'docker-compose -f docker-compose-deploy.yml up'),
+    ('PRODUCTION/DOWN', 'docker-compose -f docker-compose-deploy.yml down'),
 ]
 
 
@@ -27,13 +30,11 @@ PURPLE = '\033[35m'  # purple
 KEY_COLORS = {
     "ERROR": RED,
     "WARN": ORANGE,
-    "GET": GREEN,
-    "POST": GREEN,
-    "PUT": GREEN,
-    "DELETE": GREEN,
+    "!!!": ORANGE,
     "[INFO]": GREEN,
     "[DEBUG]": GREEN,
     "LOG:": GREEN,
+    "***": GREEN,
 }
 
 
@@ -46,8 +47,8 @@ def get_user_input() -> int:
     print(f'\t\t\t {len(COMMANDS)} - exit')
 
     number = input(f'\t\t\t {PURPLE}enter a number: {WHITE}')
-    if not number.isdigit() or int(number) < 0 or int(number) > 6:
-        print('Inputs must be a numbers (0-6)')
+    if not number.isdigit() or not -1 < int(number) < len(COMMANDS) + 1:
+        print(f'Inputs must be a numbers (0-{len(COMMANDS)})')
         return -1
     else:
         return int(number)
@@ -56,8 +57,7 @@ def get_user_input() -> int:
 def find_and_replace_with_color(output: str):
     for key in KEY_COLORS:
         if key in output.upper():
-            output = output.replace(key, f'{KEY_COLORS[key]} {key}')
-            output += WHITE
+            return f'{KEY_COLORS[key]}{output}{WHITE}'
     return output
 
 
@@ -65,7 +65,7 @@ def execute_command(command):
     print()
     process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE)
     try:
-        print(GREEN + f"{datetime.datetime.now()}> Executing: " + RED + command)
+        print(GREEN + f"{datetime.datetime.now()}> Executing: " + RED + command + WHITE)
         while True:
             output = process.stdout.readline()
             if not output and process.poll() is not None:
