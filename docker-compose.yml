@@ -2,51 +2,57 @@ version: '3.9'
 
 services:
   src:
+    container_name: src_dev
     depends_on:
       - database
     build:
       context: .
       args:
         - DEV=true
+        - PORT_EXPOSE=${API_LOCAL_PORT}
     ports:
-      - '21099:21099'
+      - ${API_LOCAL_PORT}:${API_LOCAL_PORT}
     volumes:
       - ./src:/src
-      - dev-static-data:/vol/web
+      - maito-static-data-dev:/vol/web
     command: >
       sh -c "python manage.py wait_for_db &&
              python manage.py migrate &&
-             python manage.py runserver 0.0.0.0:21099"
+             python manage.py runserver 0.0.0.0:${API_LOCAL_PORT}"
     environment:
-      - DB_HOST=database
-      - DB_NAME=maito_db
-      - DB_USER=maito_db_user
-      - DB_PASS=maito_db_pw
       - DEBUG=1
+      - DB_HOST=database
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - SECRET_KEY=${DJANGO_SECRET_KEY}
+      - ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
 
   pgadmin:
-    container_name: maito_pgadmin
+    container_name: maito_pgadmin_dev
     image: dpage/pgadmin4
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     volumes:
-      - pgadmin:/var/lib/pgadmin
+      - maito-pgadmin-dev:/var/lib/pgadmin
     ports:
-      - "${PGADMIN_PORT:-21098}:80"
+      - ${PGADMIN_PORT}:80
     restart: unless-stopped
 
   database:
+    container_name: maito_db_dev
     image: postgres:13-alpine
     volumes:
-      - maito-db-data:/var/lib/postgresql/data
+      - maito-db-data-dev:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=maito_db
       - POSTGRES_USER=maito_db_user
       - POSTGRES_PASSWORD=maito_db_pw
 
 volumes:
-  maito-db-data:
-  pgadmin:
-  dev-static-data:
+  maito-db-data-dev:
+  maito-pgadmin-dev:
+  maito-static-data-dev:
