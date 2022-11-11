@@ -47,8 +47,8 @@ def get_user_input() -> int:
     print(f'\t\t\t {len(COMMANDS)} - exit')
 
     number = input(f'\t\t\t {PURPLE}enter a number: {WHITE}')
-    if not number.isdigit() or not -1 < int(number) < len(COMMANDS):
-        print('Inputs must be a numbers (0-6)')
+    if not number.isdigit() or not -1 < int(number) < len(COMMANDS) + 1:
+        print(f'Inputs must be a numbers (0-{len(COMMANDS)})')
         return -1
     else:
         return int(number)
