@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   src:
-    container_name: src_dev
+    container_name: maito_src_dev
     depends_on:
       - database
     build:
@@ -43,7 +43,7 @@ services:
     restart: unless-stopped
 
   database:
-    container_name: maito_db_dev
+    container_name: maito_database_dev
     image: postgres:13-alpine
     volumes:
       - maito-db-data-dev:/var/lib/postgresql/data
