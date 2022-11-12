@@ -2,6 +2,7 @@ version: '3.9'
 
 services:
   src:
+    container_name: maito_src_release
     depends_on:
       - database
     build:
@@ -25,6 +26,7 @@ services:
       - maito-proxy_maito-proxy
 
   pgadmin:
+    container_name: maito_pgadmin_release
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
@@ -40,6 +42,7 @@ services:
       - maito-proxy_maito-proxy
 
   database:
+    container_name: maito_database_release
     image: postgres:13-alpine
     volumes:
       - maito-db:/var/lib/postgresql/data
