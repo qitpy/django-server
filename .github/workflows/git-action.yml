@@ -14,9 +14,9 @@ jobs:
         uses: actions/checkout@v2
       - name: test prepare
         run: docker-compose build
-      - name: run test script
+      - name: run test case
         run: docker-compose run --rm src sh -c "python manage.py test"
-      - name: run test script
+      - name: run test flake8
         run: docker-compose run --rm src sh -c "flake8 --exclude=core/migrations/,server/settings.py"
   deploy:
     needs: test
