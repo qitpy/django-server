@@ -13,6 +13,8 @@ COMMANDS = [
     ('TEST', 'docker-compose run --rm src sh -c "python manage.py test"'),
     ('COVERAGE', 'docker-compose run --rm src sh -c "coverage run manage.py test && coverage report"'),
     ('FLAKE8', 'docker-compose run --rm src sh -c flake8 --exclude=core/migrations/'),
+    ('MAKE_MIGRATION', 'docker-compose run --rm src sh -c "python manage.py makemigrations"'),
+    ('MIGRATE', 'docker-compose run --rm src sh -c "python manage.py migrate"'),
     ('PRODUCTION/BUILD', 'docker-compose -f docker-compose-deploy.yml build'),
     ('PRODUCTION/RUN', 'docker-compose -f docker-compose-deploy.yml up'),
     ('PRODUCTION/DOWN', 'docker-compose -f docker-compose-deploy.yml down'),

@@ -53,8 +53,8 @@ INSTALLED_APPS = [
     'drf_spectacular',
 
     'core',
+    'app_todo',
     'user',
-    'todo',
 ]
 
 MIDDLEWARE = [
