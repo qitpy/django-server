@@ -54,6 +54,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class TodoCard(models.Model):
     """task in short time"""
+
+    class Meta:
+        db_table = 'todo_card'
     class TodoCardColor(models.TextChoices):
         PINK = 'HT', 'HIGHEST'
         ORANGE = 'H', 'HIGH'
@@ -75,8 +78,11 @@ class TodoCard(models.Model):
     done_at = models.DateTimeField(blank=True, null=True)
 
 
-class TodoMonthCard(models.Model):
+class TodoMonth(models.Model):
     """Task in Month"""
+    class Meta:
+        db_table = 'todo_month'
+
     name = models.TextField(blank=False, null=False)
     tasks = models.ForeignKey(
         TodoCard,
@@ -84,14 +90,19 @@ class TodoMonthCard(models.Model):
     )
 
 
-class TodoYearCard(models.Model):
+class TodoYear(models.Model):
     """Task in Month"""
+    class Meta:
+        db_table = 'todo_year'
+
     name = models.TextField(blank=False, null=False)
     tasks = models.ForeignKey(TodoCard, on_delete=models.CASCADE)
-    month_tasks = models.ForeignKey(TodoMonthCard, on_delete=models.CASCADE)
+    month_tasks = models.ForeignKey(TodoMonth, on_delete=models.CASCADE)
 
-class TodoScheduleCard(models.Model):
+class TodoSchedule(models.Model):
     """task that is scheduled"""
+    class Meta:
+        db_table = 'todo_schedule'
     expired_time = models.DateTimeField(blank=False, null=False)
     note = models.TextField(blank=True, null=True)
     task = models.OneToOneField(
@@ -101,6 +112,8 @@ class TodoScheduleCard(models.Model):
 
 class UserTodo(models.Model):
     """Connection between user & Todo App"""
+    class Meta:
+        db_table = 'todo_user'
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
@@ -110,11 +123,11 @@ class UserTodo(models.Model):
         on_delete=models.CASCADE
     )
     tasks_months = models.ForeignKey(
-        TodoMonthCard,
+        TodoMonth,
         on_delete=models.CASCADE
     )
     tasks_year = models.ForeignKey(
-        TodoYearCard,
+        TodoYear,
         on_delete=models.CASCADE
     )
     weekly_note = models.TextField(
@@ -128,7 +141,7 @@ class UserTodo(models.Model):
         related_name='daily'
     )
     schedule_tasks = models.ForeignKey(
-        TodoScheduleCard,
+        TodoSchedule,
         on_delete=models.CASCADE
     )
 
