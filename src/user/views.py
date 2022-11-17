@@ -1,11 +1,12 @@
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import status
 
 from rest_framework.decorators import (
     api_view,
     authentication_classes,
-    permission_classes
+    permission_classes, renderer_classes
 )
-
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from google.oauth2 import id_token
@@ -16,11 +17,18 @@ from django.contrib.auth import login
 from knox.views import LoginView as KnoxLoginView
 from knox.auth import TokenAuthentication
 import os
+from rest_framework import serializers
+
+from user.serializers import UserRegisterRequestSerializer, UserRegisterResponseSerializer
 
 
+credential=serializers.CharField
 class LoginWithGoogle(KnoxLoginView):
     permission_classes = (AllowAny,)
-
+    @extend_schema(
+        request=UserRegisterRequestSerializer,
+        responses=UserRegisterResponseSerializer,
+    )
     def post(self, request, format=None):
         try:
             google_credential = request.data.get('credential')
@@ -33,9 +41,7 @@ class LoginWithGoogle(KnoxLoginView):
         except ValueError:
             return Response(
                 {
-                    'errors': {
-                        'token': 'Invalid token'
-                    }
+                    'detail': 'token invalid'
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -63,7 +69,7 @@ class LoginWithGoogle(KnoxLoginView):
         return data
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
 @authentication_classes([TokenAuthentication, ])
 @permission_classes([IsAuthenticated, ])
 def authentication_test(request):

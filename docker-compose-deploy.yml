@@ -21,6 +21,8 @@ services:
       - SECRET_KEY=${DJANGO_SECRET_KEY}
       - ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+    expose:
+      - ${API_SERVICE_PORT}
     networks:
       - maito-server
       - maito-proxy_maito-proxy

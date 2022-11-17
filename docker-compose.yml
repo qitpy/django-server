@@ -28,6 +28,7 @@ services:
       - SECRET_KEY=${DJANGO_SECRET_KEY}
       - ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - API_LOCAL_PORT=${API_LOCAL_PORT}
 
   pgadmin:
     container_name: maito_pgadmin_dev
@@ -48,9 +49,9 @@ services:
     volumes:
       - maito-db-data-dev:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=maito_db
-      - POSTGRES_USER=maito_db_user
-      - POSTGRES_PASSWORD=maito_db_pw
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
 
 volumes:
   maito-db-data-dev:
