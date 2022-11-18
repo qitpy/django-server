@@ -1,5 +1,5 @@
-**INTRODUCE**  
-This is My server using for Web-Backend-API purpose, that is written by [Python](https://www.python.org/) - [Django_REST_Framework](https://www.django-rest-framework.org/s)  
+# **INTRODUCE**  
+### This is My server using for Web-Backend-API purpose, that is written by [Python](https://www.python.org/) - [Django_REST_Framework](https://www.django-rest-framework.org/s)  
 
 **Developer CLI**  
 The special custom tool Command Line Interface to saving time when using docker in the project  ss
@@ -20,3 +20,9 @@ The special custom tool Command Line Interface to saving time when using docker 
 - [Knox - using for generating token authentication](https://pypi.org/project/knox/)
 - [UWSGI - proxy](https://docs.djangoproject.com/en/4.1/howto/deployment/wsgi/uwsgi/)
 
+## EASY TO RUN PROJECT BY YOURSELF
+
+- Step 1: make sure that you computer is installed [Docker](https://docs.docker.com/engine/install/) & [Docker Compose](https://docs.docker.com/compose/install/)
+- Step 2: (option) edit your environments variable (.env file) as you want. (keep it the original if you not sure)   
+- Step 3: at the root project_folder. type: `docker-compose up --build`
+- Step 4: check if it's working at: `http://localhost:8000/api/docs` (note that 8000 is the default port, which is set in the .env file)   
