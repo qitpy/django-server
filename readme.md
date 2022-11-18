@@ -6,6 +6,11 @@ The special custom tool Command Line Interface to saving time when using docker 
 ![img.png](image/CLI-ex.png)
 -> just add or choose the option, the tool will do that stuff for you  
 
+to use this tool:
+- make sure that you are installed [Python](https://www.python.org/), [Docker](https://docs.docker.com/engine/install/), [Docker Compose](https://docs.docker.com/compose/install/) in your computer
+- at the root_project folder: type `python cmd.py` 
+- and enjoy it!  
+
 **Tech & Tool using**
 - [Docker](https://www.docker.com/)
 - [Docker Compose](https://docs.docker.com/compose/)
