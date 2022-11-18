@@ -1,11 +1,10 @@
-from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.utils import extend_schema
 from rest_framework import status
 
 from rest_framework.decorators import (
     api_view,
     authentication_classes,
-    permission_classes, renderer_classes
+    permission_classes,
 )
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -17,14 +16,16 @@ from django.contrib.auth import login
 from knox.views import LoginView as KnoxLoginView
 from knox.auth import TokenAuthentication
 import os
-from rest_framework import serializers
 
-from user.serializers import UserRegisterRequestSerializer, UserRegisterResponseSerializer
+from user.serializers import (
+    UserRegisterRequestSerializer,
+    UserRegisterResponseSerializer,
+)
 
 
-credential=serializers.CharField
 class LoginWithGoogle(KnoxLoginView):
     permission_classes = (AllowAny,)
+
     @extend_schema(
         request=UserRegisterRequestSerializer,
         responses=UserRegisterResponseSerializer,

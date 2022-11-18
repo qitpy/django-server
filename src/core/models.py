@@ -57,6 +57,7 @@ class TodoCard(models.Model):
 
     class Meta:
         db_table = 'todo_card'
+
     class TodoCardColor(models.TextChoices):
         PINK = 'HT', 'HIGHEST'
         ORANGE = 'H', 'HIGH'
@@ -99,6 +100,7 @@ class TodoYear(models.Model):
     tasks = models.ForeignKey(TodoCard, on_delete=models.CASCADE)
     month_tasks = models.ForeignKey(TodoMonth, on_delete=models.CASCADE)
 
+
 class TodoSchedule(models.Model):
     """task that is scheduled"""
     class Meta:
@@ -109,6 +111,7 @@ class TodoSchedule(models.Model):
         TodoCard,
         on_delete=models.CASCADE
     )
+
 
 class UserTodo(models.Model):
     """Connection between user & Todo App"""
@@ -144,7 +147,3 @@ class UserTodo(models.Model):
         TodoSchedule,
         on_delete=models.CASCADE
     )
-
-
-
-
