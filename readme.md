@@ -2,7 +2,7 @@
 ### This is My server using for Web-Backend-API purpose, that is written by [Python](https://www.python.org/) - [Django_REST_Framework](https://www.django-rest-framework.org/s)  
 
 **Developer CLI**  
-The special custom tool Command Line Interface to saving time when using docker in the project  ss
+The special custom tool Command Line Interface to saving time when using docker in the project  
 ![img.png](image/CLI-ex.png)
 -> just add or choose the option, the tool will do that stuff for you  
 
