@@ -54,6 +54,7 @@ INSTALLED_APPS = [
 
     'core',
     'app_todo',
+    'app_portfolio',
     'user',
 ]
 
