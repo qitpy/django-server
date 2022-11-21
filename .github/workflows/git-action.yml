@@ -17,7 +17,7 @@ jobs:
       - name: run test case
         run: docker-compose run --rm src sh -c "python manage.py test"
       - name: run test flake8
-        run: docker-compose run --rm src sh -c "flake8 --exclude=core/migrations/,server/settings.py"
+        run: docker-compose run --rm src sh -c "flake8 --exclude=core/migrations/,server/settings.py,*/__init__.py,*/*/__init__.py"
   deploy:
     needs: test
     runs-on: self-hosted
