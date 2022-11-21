@@ -14,4 +14,7 @@ class PortfolioAccessFrequency(models.Model):
     ip_address = models.TextField(blank=False, null=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        db_table = 'portfolio_access_frequency'
+
 
