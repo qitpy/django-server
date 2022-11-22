@@ -24,6 +24,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: ENV setting
+        run: cp ~/.env .
       - name: Remove images
         run: docker-compose -f docker-compose-deploy.yml down
       - name: Build
