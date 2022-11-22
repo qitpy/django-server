@@ -20,7 +20,7 @@ def send_notify_email(message: PortfolioMessage):
     send_mail(
         'Portfolio Message',
         message_template,
-        'maitoserver@gmail.com',
+        'maitocode@gmail.com',
         ['code.maito@gmail.com'],
         fail_silently=False,
     )
