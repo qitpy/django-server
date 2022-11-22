@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: env setting
+        run: cp .env.example .env
       - name: test prepare
         run: docker-compose build
       - name: run test case
