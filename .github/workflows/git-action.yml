@@ -16,8 +16,8 @@ jobs:
         run: cp .env.example .env
       - name: test prepare
         run: docker-compose build
-      - name: init app
-        run: docker-compose up && docker-compose down
+      - name: wait for db
+        run: docker-compose run --rm src sh -c "python manage.py wait_for_db"
       - name: run test case
         run: docker-compose run --rm src sh -c "python manage.py test"
       - name: run test flake8
