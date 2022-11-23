@@ -53,7 +53,7 @@ def get_user_input() -> int:
     print("\t\t\t*   " + GREEN + "Developer" + WHITE + " Command Line Interface:\t*")
     print("\t\t\t* * * * * * * * * * * * * * * * * * *" + RED + " ♥ " + WHITE + "*")
     for i in range(0, len(COMMANDS)):
-        print(f'\t\t\t {i+1}\t[{COMMANDS[i][0]}]$ {BLUE}{COMMANDS[i][1]}{WHITE}')
+        print(f'\t\t\t {i+1}\t{COMMANDS[i][0]} >_ {BLUE}{COMMANDS[i][1]}{WHITE}')
     print(f'\t\t\t -{0}-\texit')
 
     number = input(f'\t\t\t {PURPLE}enter a number: {WHITE}')
