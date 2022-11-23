@@ -2,6 +2,10 @@ import subprocess
 import shlex
 import datetime
 
+import threading
+import time
+import os
+
 '''
     type your command here:
     example: ('command_name': 'command')
@@ -15,6 +19,8 @@ COMMANDS = [
     ('FLAKE8', 'docker-compose run --rm src sh -c "flake8 --exclude=core/migrations/,server/settings.py,*/__init__.py,*/*/__init__.py"'),
     ('MAKE_MIGRATION', 'docker-compose run --rm src sh -c "python manage.py makemigrations"'),
     ('MIGRATE', 'docker-compose run --rm src sh -c "python manage.py migrate"'),
+    ('SHOW_URLS', 'docker-compose run --rm src sh -c "python manage.py show_urls"'),
+
     ('PRODUCTION/BUILD', 'docker-compose -f docker-compose-deploy.yml build'),
     ('PRODUCTION/RUN', 'docker-compose -f docker-compose-deploy.yml up'),
     ('PRODUCTION/DOWN', 'docker-compose -f docker-compose-deploy.yml down'),
@@ -40,13 +46,15 @@ KEY_COLORS = {
 }
 
 
+lock = threading.Lock()
+
 def get_user_input() -> int:
     print("\n\t\t\t*" + RED + " ♥ " + WHITE + "* * * * * * * * * * * * * * * * * * *")
     print("\t\t\t*   " + GREEN + "Developer" + WHITE + " Command Line Interface:\t*")
     print("\t\t\t* * * * * * * * * * * * * * * * * * *" + RED + " ♥ " + WHITE + "*")
     for i in range(0, len(COMMANDS)):
-        print(f'\t\t\t {i} - {COMMANDS[i][0]} {BLUE}{COMMANDS[i][1]}{WHITE}')
-    print(f'\t\t\t {len(COMMANDS)} - exit')
+        print(f'\t\t\t {i+1}\t[{COMMANDS[i][0]}]$ {BLUE}{COMMANDS[i][1]}{WHITE}')
+    print(f'\t\t\t -{0}-\texit')
 
     number = input(f'\t\t\t {PURPLE}enter a number: {WHITE}')
     if not number.isdigit() or not -1 < int(number) < len(COMMANDS) + 1:
@@ -64,10 +72,10 @@ def find_and_replace_with_color(output: str):
 
 
 def execute_command(command):
-    print()
+    print(GREEN + f"{datetime.datetime.now()}> Executing: " + RED + command + WHITE)
     process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE)
+    time.sleep(3)
     try:
-        print(GREEN + f"{datetime.datetime.now()}> Executing: " + RED + command + WHITE)
         while True:
             output = process.stdout.readline()
             if not output and process.poll() is not None:
@@ -78,7 +86,9 @@ def execute_command(command):
                 line_output = find_and_replace_with_color(
                     output.strip().decode()
                 )
-                print(line_output)
+                print('\t' + line_output)
+                time.sleep(.03)
+
     except Exception as e:
         print("Interrupt exception!!: " + e.__str__())
 
@@ -87,15 +97,20 @@ def re_call_cli():
     number = -1
     while number == -1:
         number = get_user_input()
-        if -1 < number < len(COMMANDS):
-            execute_command(COMMANDS[number][1])
+        if 0 < number < len(COMMANDS):
+            execute_command(COMMANDS[number-1][1])
         elif number == -1:
             continue
-        elif number == len(COMMANDS):
-            print("\n" + PURPLE + "Exiting - Good luck! :))" + WHITE)
+        elif number == 0:
+            print(PURPLE + "Exiting...\nfollow the white rabbit :)" + WHITE)
             break
         number = -1
 
 
 if __name__ == "__main__":
-    re_call_cli()
+    try:
+        re_call_cli()
+    except KeyboardInterrupt:
+        print('\nInterrupted caught!\n' \
+              + PURPLE + "follow the white rabbit :)" + WHITE)
+        os._exit(0)

@@ -5,11 +5,14 @@ from core.models import (
 )
 from django.core.mail import send_mail
 
+import re
+
 
 class PortfolioAccessFrequencySerializer(serializers.ModelSerializer):
     class Meta:
         model = PortfolioAccessFrequency
-        fields = ['ip_address']
+        fields = ['id', 'ip_address']
+        read_only_fields = ['id']
 
 
 def send_notify_email(message: PortfolioMessage):
@@ -29,10 +32,15 @@ def send_notify_email(message: PortfolioMessage):
 class PortfolioMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PortfolioMessage
-        fields = ['message', 'name_or_email', 'ip_address']
+        fields = ['id', 'message', 'name_or_email', 'ip_address']
+        read_only_fields = ['id']
 
     def create(self, validated_data):
         """send email when someone message me"""
+        pattern = re.compile(r"((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.)"
+                             r"{3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])")
+        if not re.fullmatch(pattern, validated_data.get('ip_address')):
+            raise serializers.ValidationError('is not IP address', code='400')
         message = PortfolioMessage.objects.create(**validated_data)
         send_notify_email(message=message)
         return message

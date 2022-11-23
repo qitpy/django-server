@@ -11,6 +11,9 @@ class PortfolioMessage(models.Model):
     class Meta:
         db_table = 'portfolio_message'
 
+    def __str__(self):
+        return self.message
+
 
 class PortfolioAccessFrequency(models.Model):
     """number of access by times"""
@@ -19,3 +22,6 @@ class PortfolioAccessFrequency(models.Model):
 
     class Meta:
         db_table = 'portfolio_access_frequency'
+
+    def __str__(self):
+        return self.ip_address

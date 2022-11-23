@@ -12,7 +12,10 @@ router = DefaultRouter()
 router.register('access-frequency',
                 views.PortfolioAccessFrequencyView,
                 basename='AccessFrequency')
-router.register('message', views.PortfolioMessageViewSet, basename='Message')
+router.register('message',
+                views.PortfolioMessageViewSet,
+                'leave-message')
+
 urlpatterns = [
     path('', include(router.urls))
 ]
