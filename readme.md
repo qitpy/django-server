@@ -8,7 +8,7 @@ The special custom tool Command Line Interface to saving time when using docker 
 
 to use this tool:
 - make sure that you are installed [Python](https://www.python.org/), [Docker](https://docs.docker.com/engine/install/), [Docker Compose](https://docs.docker.com/compose/install/) in your computer
-- at the root_project folder: type `python cmd.py` 
+- at the root_project folder: type `python devCLI.py` 
 - and enjoy it!  
 
 **Integrate PgAdmin4 Web**  
