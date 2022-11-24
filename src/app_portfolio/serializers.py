@@ -35,12 +35,16 @@ class PortfolioMessageSerializer(serializers.ModelSerializer):
         fields = ['id', 'message', 'name_or_email', 'ip_address']
         read_only_fields = ['id']
 
-    def create(self, validated_data):
-        """send email when someone message me"""
+    def validate(self, data):
+        """validate IP address after validate fields"""
         pattern = re.compile(r"((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.)"
                              r"{3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])")
-        if not re.fullmatch(pattern, validated_data.get('ip_address')):
+        if not re.fullmatch(pattern, data['ip_address']):
             raise serializers.ValidationError('is not IP address', code='400')
+        return data
+
+    def create(self, validated_data):
+        """send email when someone message me"""
         message = PortfolioMessage.objects.create(**validated_data)
         send_notify_email(message=message)
         return message
