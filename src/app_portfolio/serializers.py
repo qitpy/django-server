@@ -5,7 +5,8 @@ from core.models import (
 )
 from app_portfolio.utils import (
     send_notify_email,
-    validate_limit_message_in_a_minutes
+    validate_limit_message_in_a_minutes,
+    validate_ip_address,
 )
 
 import re
@@ -26,9 +27,7 @@ class PortfolioMessageSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         """validate IP address after validate fields"""
-        pattern = re.compile(r"((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.)"
-                             r"{3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])")
-        if not re.fullmatch(pattern, data['ip_address']):
+        if not validate_ip_address(data['ip_address']):
             raise serializers.ValidationError('is not IP address', code='400')
         if not validate_limit_message_in_a_minutes(data['ip_address']):
             raise serializers.ValidationError(

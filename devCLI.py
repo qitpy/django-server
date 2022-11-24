@@ -74,7 +74,7 @@ def find_and_replace_with_color(output: str):
 def execute_command(command):
     print(GREEN + f"{datetime.datetime.now()}> Executing: " + RED + command + WHITE)
     process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE)
-    time.sleep(3.5)
+    time.sleep(4)
     try:
         while True:
             output = process.stdout.readline()
