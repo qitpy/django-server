@@ -74,7 +74,7 @@ def find_and_replace_with_color(output: str):
 def execute_command(command):
     print(GREEN + f"{datetime.datetime.now()}> Executing: " + RED + command + WHITE)
     process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE)
-    time.sleep(3)
+    time.sleep(3.5)
     try:
         while True:
             output = process.stdout.readline()
@@ -87,7 +87,7 @@ def execute_command(command):
                     output.strip().decode()
                 )
                 print('\t' + line_output)
-                time.sleep(.03)
+                time.sleep(.04)
 
     except Exception as e:
         print("Interrupt exception!!: " + e.__str__())

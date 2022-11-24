@@ -12,7 +12,11 @@ class PortfolioMessage(models.Model):
         db_table = 'portfolio_message'
 
     def __str__(self):
-        return self.message
+        return f"PortfolioMessage[" \
+               f"{self.message}," \
+               f"{self.name_or_email}," \
+               f"{self.ip_address}," \
+               f"{self.created_at}]"
 
 
 class PortfolioAccessFrequency(models.Model):

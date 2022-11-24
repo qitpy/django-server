@@ -74,7 +74,6 @@ class LoginWithGoogle(KnoxLoginView):
 @authentication_classes([TokenAuthentication, ])
 @permission_classes([IsAuthenticated, ])
 def authentication_test(request):
-    print(request.user)
     return Response(
         {
             'message': "User successfully authenticated"
