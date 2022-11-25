@@ -32,6 +32,7 @@ urlpatterns = [
          name='api-docs'),
     path('api/user/', include('user.urls')),
     path('api/portfolio/', include('app_portfolio.urls')),
+    path('api/todo/', include('app_todo.urls')),
 ]
 
 if KnoxTokenScheme:

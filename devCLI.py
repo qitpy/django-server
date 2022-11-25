@@ -4,7 +4,8 @@ import datetime
 
 import threading
 import time
-import os
+import sys
+import io
 
 '''
     type your command here:
@@ -86,7 +87,9 @@ def execute_command(command):
                 line_output = find_and_replace_with_color(
                     output.strip().decode()
                 )
-                print('\t' + line_output)
+                # sys.stdout.buffer.write(line_output)
+                sys.stdout.write(line_output)
+                # sys.stdout.write()
                 time.sleep(.04)
 
     except Exception as e:
@@ -113,4 +116,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print('\nInterrupted caught!\n' \
               + PURPLE + "follow the white rabbit :)" + WHITE)
-        os._exit(0)
+        sys._exit(0)

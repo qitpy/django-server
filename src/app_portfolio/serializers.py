@@ -9,8 +9,6 @@ from app_portfolio.utils import (
     validate_ip_address,
 )
 
-import re
-
 
 class PortfolioAccessFrequencySerializer(serializers.ModelSerializer):
     class Meta:
