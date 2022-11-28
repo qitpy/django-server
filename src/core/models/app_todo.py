@@ -11,7 +11,6 @@ class TodoCardBase(models.Model):
     name = models.TextField(blank=False, null=False)
     description = models.TextField(blank=True, null=True)
 
-    is_done = models.BooleanField(default=False, null=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     done_at = models.DateTimeField(blank=True, null=True)
@@ -36,7 +35,7 @@ class UserTodo(models.Model):
     )
 
     def __str__(self):
-        return "asaaaa"
+        return self.weekly_note
 
 
 class TodoDaily(TodoCardBase):
