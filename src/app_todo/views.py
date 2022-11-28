@@ -13,11 +13,14 @@ from django.utils import timezone
 
 class TodoCardViewSet(mixins.CreateModelMixin,
                       mixins.UpdateModelMixin,
+                      mixins.DestroyModelMixin,
+                      mixins.RetrieveModelMixin,
                       viewsets.GenericViewSet):
     queryset = TodoCard.objects.all()
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = serializers.TodoCardSerializer
+    http_method_names = ['get', 'post', 'patch', 'delete']
 
     def get_queryset(self):
         user_todo = UserTodo.objects.get(

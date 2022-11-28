@@ -92,12 +92,12 @@ class PrivateTodoCardApiTest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
         todo_card_id = res.data['id']
-        res_put = self.client.put(
+        res_patch = self.client.patch(
           todo_card_detail_url(pk=todo_card_id),
           payload_update
         )
-        self.assertEqual(res_put.status_code, status.HTTP_200_OK)
-        self.assertEqual(res_put.data['done_at'], None)
+        self.assertEqual(res_patch.status_code, status.HTTP_200_OK)
+        self.assertEqual(res_patch.data['done_at'], None)
         todo_card_updated = TodoCard.objects.get(pk=todo_card_id)
         for key, value, in payload_update.items():
             self.assertEqual(getattr(todo_card_updated, key), value)
@@ -142,3 +142,8 @@ class PrivateTodoCardApiTest(TestCase):
         todo_card.refresh_from_db()
         self.assertEqual(todo_card.done_at, None)
         self.assertEqual(res_set_status_not_done.data['done_at'], None)
+
+    # def test_get_todo_card_detail(self):
+    #     payload_create_todo_card = {
+
+    #     }
