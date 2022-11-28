@@ -31,3 +31,7 @@ class TodoCardSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+
+class TodoCardStatusSerializer(serializers.Serializer):
+    is_done = serializers.BooleanField(required=True)

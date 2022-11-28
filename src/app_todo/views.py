@@ -1,12 +1,14 @@
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, status
 from rest_framework.permissions import IsAuthenticated
-# from rest_framework.decorators import action
+from rest_framework.decorators import action
+from rest_framework.response import Response
 from app_todo import serializers
 from knox.auth import TokenAuthentication
 from core.models import (
     TodoCard,
     UserTodo
 )
+from django.utils import timezone
 
 
 class TodoCardViewSet(mixins.CreateModelMixin,
@@ -25,6 +27,31 @@ class TodoCardViewSet(mixins.CreateModelMixin,
             user_todo=user_todo
         )
 
-    # @action(methods=['PATCH'], detail=True, url_path='set-done')
-    # def set_done_task_status(self, request, pk=None):
-    #     todo = self.get_object()
+    def get_serializer_class(self):
+
+        if self.action == 'set_done_task_status':
+            return serializers.TodoCardStatusSerializer
+        return self.serializer_class
+
+    @action(
+        methods=['PATCH'],
+        detail=True,
+        url_path='set-done',
+        url_name='set-done')
+    def set_done_task_status(self, request, pk=None):
+        todo = self.get_object()
+        serializer = serializers.TodoCardStatusSerializer(
+            data=request.data)
+        if serializer.is_valid():
+            if serializer.data['is_done']:
+                todo.done_at = timezone.now()
+            else:
+                todo.done_at = None
+
+            todo.save()
+            data = serializers.TodoCardSerializer(todo).data
+            return Response(data, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST)

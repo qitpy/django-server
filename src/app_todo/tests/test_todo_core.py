@@ -11,6 +11,10 @@ from core.models import (
 TODO_CARD_URL = reverse('app_todo:todo_card-list')
 
 
+def update_todo_status_url(todo_id):
+    return reverse('app_todo:todo_card-set-done', args=[todo_id])
+
+
 def todo_card_detail_url(pk):
     """create and return todo_card detail URL"""
     return reverse('app_todo:todo_card-detail', args=[pk])
@@ -97,3 +101,44 @@ class PrivateTodoCardApiTest(TestCase):
         todo_card_updated = TodoCard.objects.get(pk=todo_card_id)
         for key, value, in payload_update.items():
             self.assertEqual(getattr(todo_card_updated, key), value)
+
+    def test_set_todo_card_status(self):
+        payload_todo_card = {
+            'name': 'this is my task',
+            'description': 'this is my description on my task'
+        }
+        payload_done = {
+            'is_done': True
+        }
+        payload_not_done = {
+            'is_done': False
+        }
+        res_init_card = self.client.post(TODO_CARD_URL, payload_todo_card)
+        self.assertEqual(res_init_card.status_code, status.HTTP_201_CREATED)
+
+        todo_card = TodoCard.objects.get(pk=res_init_card.data['id'])
+        res_set_status_done = self.client.patch(
+            update_todo_status_url(
+                res_init_card.data['id']
+            ),
+            payload_done
+        )
+        self.assertEqual(res_set_status_done.status_code, status.HTTP_200_OK)
+
+        todo_card.refresh_from_db()
+        self.assertNotEqual(todo_card.done_at, None)
+        self.assertNotEqual(res_set_status_done.data['done_at'], None)
+
+        res_set_status_not_done = self.client.patch(
+            update_todo_status_url(
+                res_init_card.data['id'],
+            ),
+            payload_not_done
+        )
+        self.assertEqual(
+            res_set_status_not_done.status_code,
+            status.HTTP_200_OK)
+
+        todo_card.refresh_from_db()
+        self.assertEqual(todo_card.done_at, None)
+        self.assertEqual(res_set_status_not_done.data['done_at'], None)
