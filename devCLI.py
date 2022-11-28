@@ -87,9 +87,7 @@ def execute_command(command):
                 line_output = find_and_replace_with_color(
                     output.strip().decode()
                 )
-                # sys.stdout.buffer.write(line_output)
-                sys.stdout.write(line_output)
-                # sys.stdout.write()
+                print(line_output)
                 time.sleep(.04)
 
     except Exception as e:
