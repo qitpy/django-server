@@ -5,7 +5,6 @@ import datetime
 import threading
 import time
 import sys
-import io
 
 '''
     type your command here:

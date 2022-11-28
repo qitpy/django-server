@@ -14,5 +14,7 @@ class TodoCardSerializer(serializers.ModelSerializer):
     def create(self, validate_data):
         user = self.context['request'].user
         user_todo, _ = UserTodo.objects.get_or_create(user=user)
-        todo_card = TodoCard.objects.create(user_todo=user_todo, **validate_data)
+        todo_card = TodoCard.objects.create(
+            user_todo=user_todo,
+            **validate_data)
         return todo_card

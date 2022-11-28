@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 
+
 class TodoCardBase(models.Model):
     """task in short time"""
 
@@ -18,8 +19,10 @@ class TodoCardBase(models.Model):
 
 class UserTodo(models.Model):
     """Connection between user & Todo App"""
+
     class Meta:
         db_table = 'todo_user'
+
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -47,10 +50,13 @@ class TodoDaily(TodoCardBase):
         blank=False,
     )
 
+
 class TodoSchedule(TodoCardBase):
     """task that is scheduled"""
+
     class Meta:
         db_table = 'todo_schedule'
+
     expired_time = models.DateTimeField(blank=False, null=False)
     note = models.TextField(blank=True, null=True)
 
@@ -65,6 +71,7 @@ class TodoSchedule(TodoCardBase):
 class TodoCard(TodoCardBase):
     class Meta:
         db_table = 'todo_cards'
+
     class TodoCardColor(models.TextChoices):
         PINK = 'HT', 'HIGHEST'
         ORANGE = 'H', 'HIGH'
@@ -83,6 +90,7 @@ class TodoCard(TodoCardBase):
         blank=False,
     )
 
+
 class TodoMonth(TodoCardBase):
     """Task in Month"""
 
@@ -99,8 +107,10 @@ class TodoMonth(TodoCardBase):
         blank=False,
     )
 
+
 class TodoYear(TodoCardBase):
     """Task in Month"""
+
     class Meta:
         db_table = 'todo_year'
 

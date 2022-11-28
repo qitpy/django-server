@@ -1,28 +1,29 @@
+from django.contrib.auth import get_user_model
 from django.test import TestCase
-from unittest.mock import patch
-
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
-from django.contrib.auth import get_user_model
 
 from core.models import (
     TodoCard,
-    UserTodo,
 )
 
 TODO_CARD_URL = reverse('app_todo:todo_card-list')
+
 
 def todo_card_detail_url(pk):
     """create and return todo_card detail URL"""
     return reverse('app_todo:todo_card-detail', args=[pk])
 
+
 def create_user(email='quyet.doan@gmail.com', name='Quiet'):
     """create and return a new user"""
     return get_user_model().objects.create_user(email, name)
 
+
 class PublicTodoCardApiTest(TestCase):
     """test unauthenticated API"""
+
     def setUp(self):
         self.client = APIClient()
 
@@ -30,8 +31,10 @@ class PublicTodoCardApiTest(TestCase):
         res = self.client.get(TODO_CARD_URL)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
+
 class PrivateTodoCardApiTest(TestCase):
     """test authenticated API requests"""
+
     def setUp(self):
         self.client = APIClient()
         self.user = create_user()
@@ -86,10 +89,11 @@ class PrivateTodoCardApiTest(TestCase):
     #     self.assertEqual(res.status_code, status.HTTP_201_CREATED)
     #
     #     todo_card_id = res.data['id']
-    #     res_put = self.client.put(todo_card_detail_url(pk=todo_card_id), payload_update)
+    #     res_put = self.client.put(
+    #       todo_card_detail_url(pk=todo_card_id),
+    #       payload_update)
     #     self.assertEqual(res.status_code, status.HTTP_200_OK)
     #
     #     todo_card_updated = TodoCard.objects.get(pk=todo_card_id)
     #     for key, value in payload_update:
     #         self.assertEqual(getattr(todo_card_updated, key), value)
-
