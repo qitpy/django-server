@@ -25,6 +25,12 @@ def create_user(email='quyet.doan@gmail.com', name='Quiet'):
     return get_user_model().objects.create_user(email, name)
 
 
+payload_create_todo_card_default = {
+    'name': 'todo task name test',
+    'description': 'descriptions of the task test',
+}
+
+
 class PublicTodoCardApiTest(TestCase):
     """test unauthenticated API"""
 
@@ -46,16 +52,12 @@ class PrivateTodoCardApiTest(TestCase):
 
     def test_todo_card_create_api_successful(self):
         """test create todo_card successful"""
-        payload = {
-            'name': 'todo task name',
-            'description': 'descriptions of the task',
-        }
-        res = self.client.post(TODO_CARD_URL, payload)
+        res = self.client.post(TODO_CARD_URL, payload_create_todo_card_default)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         self.assertEqual(res.data['done_at'], None)
         todo_card_id = res.data['id']
         todo_card = TodoCard.objects.get(pk=todo_card_id)
-        for key, value in payload.items():
+        for key, value in payload_create_todo_card_default.items():
             self.assertEqual(getattr(todo_card, key), value)
         self.assertTrue(todo_card.user_todo.user_id == self.user.id)
 
@@ -80,15 +82,12 @@ class PrivateTodoCardApiTest(TestCase):
 
     def test_update_todo_card_successful(self):
         """test update todo_card that will be success"""
-        payload_init = {
-            'name': 'this is my task',
-            'description': 'this is my description on my task'
-        }
         payload_update = {
             'name': 'this is the task updated',
             'description': 'this is my the updating of the description'
         }
-        res = self.client.post(TODO_CARD_URL, payload_init)
+
+        res = self.client.post(TODO_CARD_URL, payload_create_todo_card_default)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
         todo_card_id = res.data['id']
@@ -103,17 +102,16 @@ class PrivateTodoCardApiTest(TestCase):
             self.assertEqual(getattr(todo_card_updated, key), value)
 
     def test_set_todo_card_status(self):
-        payload_todo_card = {
-            'name': 'this is my task',
-            'description': 'this is my description on my task'
-        }
         payload_done = {
             'is_done': True
         }
         payload_not_done = {
             'is_done': False
         }
-        res_init_card = self.client.post(TODO_CARD_URL, payload_todo_card)
+
+        res_init_card = self.client.post(
+            TODO_CARD_URL,
+            payload_create_todo_card_default)
         self.assertEqual(res_init_card.status_code, status.HTTP_201_CREATED)
 
         todo_card = TodoCard.objects.get(pk=res_init_card.data['id'])
@@ -143,7 +141,34 @@ class PrivateTodoCardApiTest(TestCase):
         self.assertEqual(todo_card.done_at, None)
         self.assertEqual(res_set_status_not_done.data['done_at'], None)
 
-    # def test_get_todo_card_detail(self):
-    #     payload_create_todo_card = {
+    def test_get_todo_card_detail(self):
+        todo_create = self.client.post(
+            TODO_CARD_URL,
+            payload_create_todo_card_default)
+        self.assertEqual(todo_create.status_code, status.HTTP_201_CREATED)
 
-    #     }
+        todo_id = todo_create.data['id']
+        todo_get = self.client.get(todo_card_detail_url(todo_id))
+        self.assertEqual(todo_get.status_code, status.HTTP_200_OK)
+
+        todo_entity = TodoCard.objects.get(pk=todo_id)
+        for key, value in payload_create_todo_card_default.items():
+            self.assertEqual(todo_get.data[key], value)
+            self.assertEqual(getattr(todo_entity, key), value)
+        self.assertNotEqual(todo_get.data['created_at'], None)
+        self.assertNotEqual(todo_get.data['updated_at'], None)
+
+    def test_delete_todo_card(self):
+        todo_1 = self.client.post(
+            TODO_CARD_URL,
+            payload_create_todo_card_default)
+        self.assertEqual(todo_1.status_code, status.HTTP_201_CREATED)
+
+        todo_id = todo_1.data['id']
+        res_del = self.client.delete(todo_card_detail_url(todo_id))
+        self.assertEqual(res_del.status_code, status.HTTP_204_NO_CONTENT)
+
+        res_get_todo_deleted = self.client.get(todo_card_detail_url(todo_id))
+        self.assertEqual(
+            res_get_todo_deleted.status_code,
+            status.HTTP_404_NOT_FOUND)

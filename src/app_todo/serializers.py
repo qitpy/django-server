@@ -12,10 +12,8 @@ class TodoCardSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'description',
-            'created_at',
-            'updated_at',
             'done_at']
-        read_only_fields = ['id', 'created_at', 'updated_at', 'done_at']
+        read_only_fields = ['id', 'done_at']
 
     def create(self, validate_data):
         user = self.context['request'].user
@@ -31,6 +29,13 @@ class TodoCardSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+
+class TodoCardDetailSerializer(TodoCardSerializer):
+    class Meta(TodoCardSerializer.Meta):
+        fields = TodoCardSerializer.Meta.fields + ['created_at', 'updated_at']
+        read_only_fields = TodoCardSerializer.Meta.read_only_fields \
+            + ['created_at', 'updated_at']
 
 
 class TodoCardStatusSerializer(serializers.Serializer):

@@ -19,7 +19,7 @@ class TodoCardViewSet(mixins.CreateModelMixin,
     queryset = TodoCard.objects.all()
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-    serializer_class = serializers.TodoCardSerializer
+    serializer_class = serializers.TodoCardDetailSerializer
     http_method_names = ['get', 'post', 'patch', 'delete']
 
     def get_queryset(self):
@@ -31,7 +31,8 @@ class TodoCardViewSet(mixins.CreateModelMixin,
         )
 
     def get_serializer_class(self):
-
+        if self.action == 'list':
+            return serializers.TodoCardSerializer
         if self.action == 'set_done_task_status':
             return serializers.TodoCardStatusSerializer
         return self.serializer_class
