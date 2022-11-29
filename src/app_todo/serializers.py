@@ -12,6 +12,7 @@ class TodoCardSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'description',
+            'color',
             'done_at']
         read_only_fields = ['id', 'done_at']
 
