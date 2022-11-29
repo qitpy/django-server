@@ -15,6 +15,7 @@ class TodoCardViewSet(mixins.CreateModelMixin,
                       mixins.UpdateModelMixin,
                       mixins.DestroyModelMixin,
                       mixins.RetrieveModelMixin,
+                      mixins.ListModelMixin,
                       viewsets.GenericViewSet):
     queryset = TodoCard.objects.all()
     authentication_classes = [TokenAuthentication]
