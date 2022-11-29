@@ -111,19 +111,25 @@ class PrivateTodoCardApiTest(TestCase):
             'name': 'this is the task updated',
             'description': 'this is my the updating of the description'
         }
-        res = self.client.post(TODO_CARD_URL, payload_create_todo_card_default)
+        res = self.client.post(
+            TODO_CARD_URL,
+            payload_create_todo_card_default)
         todo_card_id = res.data['id']
         res_patch = self.client.patch(
           todo_card_detail_url(pk=todo_card_id),
           payload_update
         )
-        self.assertEqual(res_patch.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            res_patch.status_code,
+            status.HTTP_200_OK)
         self.assertEqual(res_patch.data['done_at'], None)
         todo_card_updated = TodoCard.objects.get(pk=todo_card_id)
 
         # check payload with database is the same data
         for key, value, in payload_update.items():
-            self.assertEqual(getattr(todo_card_updated, key), value)
+            self.assertEqual(
+                getattr(todo_card_updated, key),
+                value)
 
         # test response with database valid
         for key, value in res_patch.data.items():
@@ -132,7 +138,9 @@ class PrivateTodoCardApiTest(TestCase):
                     getattr(todo_card_updated, key),
                     datetime.datetime.fromisoformat(value))
             else:
-                self.assertEqual(getattr(todo_card_updated, key), value)
+                self.assertEqual(
+                    getattr(todo_card_updated, key),
+                    value)
 
     def test_set_todo_card_status(self):
         payload_done = {
