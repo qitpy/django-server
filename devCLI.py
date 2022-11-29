@@ -4,7 +4,7 @@ import datetime
 
 import threading
 import time
-import sys
+import os
 
 '''
     type your command here:
@@ -113,4 +113,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print('\nInterrupted caught!\n' \
               + PURPLE + "follow the white rabbit :)" + WHITE)
-        sys._exit(0)
+        os._exit(0)
