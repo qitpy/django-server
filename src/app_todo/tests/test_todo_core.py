@@ -4,8 +4,11 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
+from app_todo import serializers
+
 from core.models import (
     TodoCard,
+    UserTodo,
 )
 
 import datetime
@@ -266,3 +269,64 @@ class PrivateTodoCardApiTest(TestCase):
                         datetime.datetime.fromisoformat(value))
                 else:
                     self.assertEqual(getattr(todo, key), value)
+
+    def test_list_todo_card(self):
+        # create todo for default user
+        res_todo_1 = self.client.post(
+            TODO_CARD_URL,
+            payload_create_todo_card_default)
+        res_todo_2 = self.client.post(
+            TODO_CARD_URL,
+            payload_create_todo_card_default)
+        res_todo_3 = self.client.post(
+            TODO_CARD_URL,
+            payload_create_todo_card_default)
+
+        # create other user and todo of that user
+        other_user = create_user(email='other@user.com')
+        other_user_todo = UserTodo.objects.create(user=other_user)
+        TodoCard.objects.create(
+            user_todo=other_user_todo,
+            **payload_create_todo_card_default)
+        TodoCard.objects.create(
+            user_todo=other_user_todo,
+            **payload_create_todo_card_default)
+
+        # test list method
+        res_list_todo = self.client.get(TODO_CARD_URL)
+        self.assertEqual(
+            res_list_todo.status_code,
+            status.HTTP_200_OK)
+        todo_id_arr = [
+            res_todo_1.data['id'],
+            res_todo_2.data['id'],
+            res_todo_3.data['id']]
+        for res_data in res_list_todo.data:
+            item_id = res_data['id']
+            self.assertTrue(item_id in todo_id_arr)
+            todo_card_item = TodoCard.objects.get(pk=item_id)
+            self.assertEqual(
+                res_data,
+                serializers.TodoCardSerializer(todo_card_item).data)
+            todo_id_arr.remove(item_id)
+        self.assertFalse(todo_id_arr)
+
+    def test_list_todo_card_ordering_by_time(self):
+        res_todo_1 = self.client.post(
+            TODO_CARD_URL,
+            payload_create_todo_card_default)
+        res_todo_2 = self.client.post(
+            TODO_CARD_URL,
+            payload_create_todo_card_default)
+        res_todo_3 = self.client.post(
+            TODO_CARD_URL,
+            payload_create_todo_card_default)
+
+        res_expect = [
+            res_todo_1.data['id'],
+            res_todo_2.data['id'],
+            res_todo_3.data['id']]
+
+        res_list_todo = self.client.get(TODO_CARD_URL)
+        for i, x in enumerate(res_list_todo.data):
+            self.assertEqual(x['id'], res_expect[i])
