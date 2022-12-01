@@ -17,7 +17,7 @@ class TodoCardViewSet(mixins.CreateModelMixin,
                       mixins.RetrieveModelMixin,
                       mixins.ListModelMixin,
                       viewsets.GenericViewSet):
-    queryset = TodoCard.objects.all()
+    queryset = TodoCard.objects.all().order_by('updated_at')
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = serializers.TodoCardDetailSerializer

@@ -310,3 +310,23 @@ class PrivateTodoCardApiTest(TestCase):
                 serializers.TodoCardSerializer(todo_card_item).data)
             todo_id_arr.remove(item_id)
         self.assertFalse(todo_id_arr)
+
+    def test_list_todo_card_ordering_by_time(self):
+        res_todo_1 = self.client.post(
+            TODO_CARD_URL,
+            payload_create_todo_card_default)
+        res_todo_2 = self.client.post(
+            TODO_CARD_URL,
+            payload_create_todo_card_default)
+        res_todo_3 = self.client.post(
+            TODO_CARD_URL,
+            payload_create_todo_card_default)
+
+        res_expect = [
+            res_todo_1.data['id'],
+            res_todo_2.data['id'],
+            res_todo_3.data['id']]
+
+        res_list_todo = self.client.get(TODO_CARD_URL)
+        for i, x in enumerate(res_list_todo.data):
+            self.assertEqual(x['id'], res_expect[i])
