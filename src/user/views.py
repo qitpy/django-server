@@ -1,12 +1,7 @@
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
 
-from rest_framework.decorators import (
-    api_view,
-    authentication_classes,
-    permission_classes,
-)
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from google.oauth2 import id_token
 from google.auth.transport import requests
@@ -14,7 +9,6 @@ from google.auth.transport import requests
 from django.contrib.auth import get_user_model
 from django.contrib.auth import login
 from knox.views import LoginView as KnoxLoginView
-from knox.auth import TokenAuthentication
 import os
 
 from user.serializers import (
@@ -68,15 +62,3 @@ class LoginWithGoogle(KnoxLoginView):
                 context=self.get_context()
             ).data
         return data
-
-
-@api_view(['GET'])
-@authentication_classes([TokenAuthentication, ])
-@permission_classes([IsAuthenticated, ])
-def authentication_test(request):
-    return Response(
-        {
-            'message': "User successfully authenticated"
-        },
-        status=status.HTTP_200_OK,
-    )

@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -12,8 +12,12 @@ from core.models import (
 )
 
 import datetime
+import random
+
 
 TODO_CARD_URL = reverse('app_todo:todo_card-list')
+TODO_CARD_BY_COLOR_URL = \
+    reverse('app_todo:todo_card-sort-by-color')
 
 
 def update_todo_status_url(todo_id):
@@ -56,6 +60,7 @@ class PrivateTodoCardApiTest(TestCase):
         self.client = APIClient()
         self.user = create_user()
         self.client.force_authenticate(self.user)
+        self.factory = RequestFactory()
 
     def test_todo_card_create_api_successful(self):
         """test create todo_card successful"""
@@ -312,6 +317,7 @@ class PrivateTodoCardApiTest(TestCase):
         self.assertFalse(todo_id_arr)
 
     def test_list_todo_card_ordering_by_time(self):
+        """test that GET list return that ordered by update time"""
         res_todo_1 = self.client.post(
             TODO_CARD_URL,
             payload_create_todo_card_default)
@@ -330,3 +336,53 @@ class PrivateTodoCardApiTest(TestCase):
         res_list_todo = self.client.get(TODO_CARD_URL)
         for i, x in enumerate(res_list_todo.data):
             self.assertEqual(x['id'], res_expect[i])
+
+    def test_get_list_todo_card_sort_by_color(self):
+        color_list = [
+            TodoCard.TodoCardColor.PINK,
+            TodoCard.TodoCardColor.ORANGE,
+            TodoCard.TodoCardColor.BLUE,
+            TodoCard.TodoCardColor.GREEN]
+        payload = {
+            'name': 'test_todo',
+            'description': 'this is task for testing'
+        }
+        # initial list todo_task
+        res_list = []
+        for x in range(10):
+            payload['color'] = random.choice(color_list)
+            res = self.client.post(
+                TODO_CARD_URL,
+                payload)
+            res_list.append(res.data)
+
+        # expect response design
+        pink_task = filter(
+            lambda x: x['color'] == TodoCard.TodoCardColor.PINK,
+            res_list)
+        orange_task = filter(
+            lambda x: x['color'] == TodoCard.TodoCardColor.ORANGE,
+            res_list)
+        blue_task = filter(
+            lambda x: x['color'] == TodoCard.TodoCardColor.BLUE,
+            res_list)
+        green_task = filter(
+            lambda x: x['color'] == TodoCard.TodoCardColor.GREEN,
+            res_list)
+
+        pink_task_expect = \
+            [serializers.TodoCardSerializer(x).data for x in pink_task]
+        orange_task_expect = \
+            [serializers.TodoCardSerializer(x).data for x in orange_task]
+        blue_task_expect = \
+            [serializers.TodoCardSerializer(x).data for x in blue_task]
+        green_task_expect = \
+            [serializers.TodoCardSerializer(x).data for x in green_task]
+
+        # assert as design response
+        res = self.client.get(TODO_CARD_BY_COLOR_URL)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(pink_task_expect, res.data['pink_task'])
+        self.assertEqual(orange_task_expect, res.data['orange_task'])
+        self.assertEqual(blue_task_expect, res.data['blue_task'])
+        self.assertEqual(green_task_expect, res.data['green_task'])
