@@ -6,7 +6,7 @@ from app_todo import serializers
 from knox.auth import TokenAuthentication
 from core.models import (
     TodoCard,
-    UserTodo
+    UserTodo,
 )
 from django.utils import timezone
 
@@ -32,10 +32,10 @@ class TodoCardViewSet(mixins.CreateModelMixin,
         )
 
     def get_serializer_class(self):
-        if self.action == 'list':
+        if self.action == 'list' or self.action == 'sort-by-color':
             return serializers.TodoCardSerializer
         if self.action == 'set_done_task_status':
-            return serializers.TodoCardStatusSerializer
+            return serializers.RequestTodoCardStatusSerializer
         return self.serializer_class
 
     @action(
@@ -45,7 +45,7 @@ class TodoCardViewSet(mixins.CreateModelMixin,
         url_name='set-done')
     def set_done_task_status(self, request, pk=None):
         todo = self.get_object()
-        serializer = serializers.TodoCardStatusSerializer(
+        serializer = serializers.RequestTodoCardStatusSerializer(
             data=request.data)
         if serializer.is_valid():
             if serializer.data['is_done']:
@@ -60,3 +60,16 @@ class TodoCardViewSet(mixins.CreateModelMixin,
             return Response(
                 serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST)
+
+    @action(
+        methods=['GET'],
+        detail=False,
+        url_path='sort-by-color',
+        url_name='sort-by-color')
+    def get_task_sort_by_color(self, request):
+        queryset = self.queryset
+        res = serializers.ResponseGetListByColor(queryset)
+
+        return Response(
+            data=res.data,
+            status=status.HTTP_200_OK)
