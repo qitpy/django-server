@@ -32,10 +32,21 @@ class TodoCardViewSet(mixins.CreateModelMixin,
                 user=self.request.user)
         queryset = self.queryset.filter(user_todo=user_todo)
 
+        is_have_color_params: str = self.request.GET.get('is_have_color', None)
+        is_done_params: str = self.request.GET.get('is_done', None)
+
+        print('is_have_color***********', self.request)
+        # print('is_done_params', is_done_params)
+
+        if is_have_color_params is not None:
+            queryset = queryset.filter(color__isnull=eval(is_have_color_params))
+        if is_done_params is not None:
+            queryset = queryset.filter(done_at__isnull=not eval(is_done_params))
+
         return queryset
 
     def get_serializer_class(self):
-        if self.action == 'list' or self.action == 'sort-by-color':
+        if self.action in ['list', 'sort-by-color']:
             return serializers.TodoCardSerializer
         if self.action == 'set_done_task_status':
             return serializers.RequestTodoCardStatusSerializer
