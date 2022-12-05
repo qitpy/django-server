@@ -20,6 +20,12 @@ TODO_CARD_BY_COLOR_URL = \
     reverse('app_todo:todo_card-sort-by-color')
 
 
+def list_and_filtering_todo_card_sort_by_color_url(**kwargs):
+    url = reverse('app_todo:todo_card-sort-by-color')
+    is_done = kwargs['is_done']
+    return f'{url}?is_done={is_done}'
+
+
 def update_todo_status_url(todo_id):
     return reverse('app_todo:todo_card-set-done', args=[todo_id])
 
@@ -337,7 +343,58 @@ class PrivateTodoCardApiTest(TestCase):
         for i, x in enumerate(res_list_todo.data):
             self.assertEqual(x['id'], res_expect[i])
 
-    def test_get_list_todo_card_sort_by_color(self):
+    # def test_get_list_todo_card_sort_by_color(self):
+    #     # initial list todo_task
+    #     color_list = [
+    #         TodoCard.TodoCardColor.PINK,
+    #         TodoCard.TodoCardColor.ORANGE,
+    #         TodoCard.TodoCardColor.BLUE,
+    #         TodoCard.TodoCardColor.GREEN]
+    #     payload = {
+    #         'name': 'test_todo',
+    #         'description': 'this is task for testing'
+    #     }
+    #     res_list = []
+    #     for x in range(10):
+    #         payload['color'] = random.choice(color_list)
+    #         res = self.client.post(
+    #             TODO_CARD_URL,
+    #             payload)
+    #         res_list.append(res.data)
+
+    #     # expect response design
+    #     pink_task = filter(
+    #         lambda x: x['color'] == TodoCard.TodoCardColor.PINK,
+    #         res_list)
+    #     orange_task = filter(
+    #         lambda x: x['color'] == TodoCard.TodoCardColor.ORANGE,
+    #         res_list)
+    #     blue_task = filter(
+    #         lambda x: x['color'] == TodoCard.TodoCardColor.BLUE,
+    #         res_list)
+    #     green_task = filter(
+    #         lambda x: x['color'] == TodoCard.TodoCardColor.GREEN,
+    #         res_list)
+
+    #     pink_task_expect = \
+    #         [serializers.TodoCardSerializer(x).data for x in pink_task]
+    #     orange_task_expect = \
+    #         [serializers.TodoCardSerializer(x).data for x in orange_task]
+    #     blue_task_expect = \
+    #         [serializers.TodoCardSerializer(x).data for x in blue_task]
+    #     green_task_expect = \
+    #         [serializers.TodoCardSerializer(x).data for x in green_task]
+
+    #     # assert as design response
+    #     res = self.client.get(TODO_CARD_BY_COLOR_URL)
+    #     self.assertEqual(res.status_code, status.HTTP_200_OK)
+    #     self.assertEqual(pink_task_expect, res.data['pink_task'])
+    #     self.assertEqual(orange_task_expect, res.data['orange_task'])
+    #     self.assertEqual(blue_task_expect, res.data['blue_task'])
+    #     self.assertEqual(green_task_expect, res.data['green_task'])
+
+    def test_filter_task_by_done_status(self):
+        # initial list todo_task
         color_list = [
             TodoCard.TodoCardColor.PINK,
             TodoCard.TodoCardColor.ORANGE,
@@ -347,42 +404,40 @@ class PrivateTodoCardApiTest(TestCase):
             'name': 'test_todo',
             'description': 'this is task for testing'
         }
-        # initial list todo_task
         res_list = []
-        for x in range(10):
+        for _ in range(10):
             payload['color'] = random.choice(color_list)
             res = self.client.post(
-                TODO_CARD_URL,
-                payload)
-            res_list.append(res.data)
+                TODO_CARD_URL, payload)
+            payload_done_status = \
+                {'is_done': random.choice([True, False])}
+            res_set_done = self.client.patch(
+                update_todo_status_url(res.data['id']),
+                payload_done_status)
+            res_list.append(res_set_done.data)
 
-        # expect response design
-        pink_task = filter(
-            lambda x: x['color'] == TodoCard.TodoCardColor.PINK,
-            res_list)
-        orange_task = filter(
-            lambda x: x['color'] == TodoCard.TodoCardColor.ORANGE,
-            res_list)
-        blue_task = filter(
-            lambda x: x['color'] == TodoCard.TodoCardColor.BLUE,
-            res_list)
-        green_task = filter(
-            lambda x: x['color'] == TodoCard.TodoCardColor.GREEN,
-            res_list)
+        # make request to test
+        query_params_done_task = {
+            'is_done': True
+        }
+        query_params_not_done_task = {
+            'is_done': False
+        }
+        res_done_task = self.client.get(
+            list_and_filtering_todo_card_sort_by_color_url(
+                **query_params_done_task))
+        res_not_done_task = self.client.get(
+            list_and_filtering_todo_card_sort_by_color_url(
+                **query_params_not_done_task))
 
-        pink_task_expect = \
-            [serializers.TodoCardSerializer(x).data for x in pink_task]
-        orange_task_expect = \
-            [serializers.TodoCardSerializer(x).data for x in orange_task]
-        blue_task_expect = \
-            [serializers.TodoCardSerializer(x).data for x in blue_task]
-        green_task_expect = \
-            [serializers.TodoCardSerializer(x).data for x in green_task]
+        expect_item_done_task = list(filter(
+                lambda x: x['done_at'] is not None, res_list))
+        expect_item_not_done_task = list(filter(
+                lambda x: x['done_at'] is None, res_list))
 
-        # assert as design response
-        res = self.client.get(TODO_CARD_BY_COLOR_URL)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(pink_task_expect, res.data['pink_task'])
-        self.assertEqual(orange_task_expect, res.data['orange_task'])
-        self.assertEqual(blue_task_expect, res.data['blue_task'])
-        self.assertEqual(green_task_expect, res.data['green_task'])
+        for key, _ in res_done_task.data.items():
+            for task_done in res_done_task.data[key]:
+                self.assertIn(dict(task_done), expect_item_done_task)
+        for key, _ in res_not_done_task.data.items():
+            for task_not_done in res_not_done_task.data[key]:
+                self.assertIn(dict(task_not_done), expect_item_not_done_task)

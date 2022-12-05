@@ -45,7 +45,10 @@ class RequestTodoCardStatusSerializer(serializers.Serializer):
 
 class ResponseGetListByColor(serializers.Serializer):
 
-    def to_representation(self, internal_data):
+    def to_representation(self, internal_data: list[TodoCard]):
+        """
+        internal_data: serialized data get from database
+        """
         deserialize_data = TodoCardSerializer(
             internal_data, many=True).data
 

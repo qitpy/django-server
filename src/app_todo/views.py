@@ -23,13 +23,16 @@ class TodoCardViewSet(mixins.CreateModelMixin,
     serializer_class = serializers.TodoCardDetailSerializer
     http_method_names = ['get', 'post', 'patch', 'delete']
 
+    """
+    note that any custom view will not call this func
+    LOL : )
+    """
     def get_queryset(self):
         user_todo = UserTodo.objects.get(
-                user=self.request.user
-            )
-        return self.queryset.filter(
-            user_todo=user_todo
-        )
+                user=self.request.user)
+        queryset = self.queryset.filter(user_todo=user_todo)
+
+        return queryset
 
     def get_serializer_class(self):
         if self.action == 'list' or self.action == 'sort-by-color':
@@ -64,12 +67,21 @@ class TodoCardViewSet(mixins.CreateModelMixin,
     @action(
         methods=['GET'],
         detail=False,
-        url_path='sort-by-color',
+        url_path=r'sort-by-color',
         url_name='sort-by-color')
     def get_task_sort_by_color(self, request):
-        queryset = self.queryset
-        res = serializers.ResponseGetListByColor(queryset)
+        user_todo = UserTodo.objects.get(user=request.user)
+        queryset = self.queryset.filter(user_todo=user_todo)
 
+        is_done: bool = eval(self.request.query_params.get('is_done', None))
+        new_query = None
+        if is_done is not None:
+            queryset = \
+                queryset.filter(done_at__isnull=False) \
+                if is_done else \
+                queryset.filter(done_at__isnull=False)
+
+        res = serializers.ResponseGetListByColor(new_query)
         return Response(
             data=res.data,
             status=status.HTTP_200_OK)
