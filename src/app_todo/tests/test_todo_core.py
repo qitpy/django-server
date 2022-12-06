@@ -20,6 +20,15 @@ TODO_CARD_BY_COLOR_URL = \
     reverse('app_todo:todo_card-sort-by-color')
 
 
+def list_and_filtering_todo_card_base_url(**kwargs):
+    is_have_color = kwargs.get('is_have_color', None)
+    query_params_str = ''
+    if is_have_color is not None:
+        query_params_str += f'is_have_color={is_have_color}'
+
+    return f'{TODO_CARD_URL}?{query_params_str}'
+
+
 def list_and_filtering_todo_card_sort_by_color_url(**kwargs):
     url = reverse('app_todo:todo_card-sort-by-color')
     is_done = kwargs['is_done']
@@ -425,15 +434,67 @@ class PrivateTodoCardApiTest(TestCase):
         res_not_done_task = self.client.get(
             list_and_filtering_todo_card_sort_by_color_url(
                 **query_params_not_done_task))
+        self.assertEqual(res_done_task.status_code, status.HTTP_200_OK)
+        self.assertEqual(res_not_done_task.status_code, status.HTTP_200_OK)
 
+        # test number of item is fulfill
+        number_items = 0
+        for _, value in res_done_task.data.items():
+            number_items += len(value)
+        for _, value in res_not_done_task.data.items():
+            number_items += len(value)
+        self.assertEqual(number_items, 10)
+
+        # test response item is the right type
         expect_item_done_task = list(filter(
                 lambda x: x['done_at'] is not None, res_list))
         expect_item_not_done_task = list(filter(
                 lambda x: x['done_at'] is None, res_list))
-
         for key, _ in res_done_task.data.items():
             for task_done in res_done_task.data[key]:
                 self.assertIn(dict(task_done), expect_item_done_task)
         for key, _ in res_not_done_task.data.items():
             for task_not_done in res_not_done_task.data[key]:
                 self.assertIn(dict(task_not_done), expect_item_not_done_task)
+
+    def test_get_task_have_no_color_filter(self):
+        # initial list todo_task
+        color_list = [
+            TodoCard.TodoCardColor.PINK,
+            TodoCard.TodoCardColor.ORANGE,
+            TodoCard.TodoCardColor.BLUE,
+            TodoCard.TodoCardColor.GREEN
+        ]
+        payload = {
+            'name': 'test_todo',
+            'description': 'this is task for testing'
+        }
+        res_list = []
+        for _ in range(10):
+            if random.choice([True, False]):
+                payload['color'] = random.choice(color_list)
+            res = self.client.post(
+                TODO_CARD_URL, payload)
+            res_list.append(res.data)
+
+        # test api
+        payload_have_color = {
+            'is_have_color': True
+        }
+        payload_not_have_color = {
+            'is_have_color': False
+        }
+        res_have_color = self.client.get(
+            list_and_filtering_todo_card_base_url(**payload_have_color))
+        res_not_have_color = self.client.get(
+            list_and_filtering_todo_card_base_url(**payload_not_have_color))
+
+        self.assertEqual(res_have_color.status_code, status.HTTP_200_OK)
+        self.assertEqual(res_not_have_color.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            len(res_have_color.data) + len(res_not_have_color.data),
+            10)
+        for todo_card in res_have_color.data:
+            self.assertIsNotNone(todo_card['color'])
+        for todo_card in res_not_have_color.data:
+            self.assertIsNone(todo_card['color'])
