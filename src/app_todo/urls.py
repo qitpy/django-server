@@ -9,7 +9,9 @@ router = DefaultRouter()
 router.register('todo-card',
                 views.TodoCardViewSet,
                 basename='todo_card')
-
+router.register('daily-todo',
+                views.DailyViewSet,
+                basename='todo_daily')
 urlpatterns = [
     path('', include(router.urls))
 ]

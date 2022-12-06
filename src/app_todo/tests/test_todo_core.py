@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase, RequestFactory
+from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -78,7 +78,6 @@ class PrivateTodoCardApiTest(TestCase):
         self.client = APIClient()
         self.user = create_user()
         self.client.force_authenticate(self.user)
-        self.factory = RequestFactory()
 
     def test_todo_card_create_api_successful(self):
         """test create todo_card successful"""
@@ -565,3 +564,6 @@ class PrivateTodoCardApiTest(TestCase):
         self.assertEqual(
             res_no_color_and_not_done.data,
             expect_res_no_color_and_not_done)
+
+    def test_list_todo_card_always_sort_by_updated_time(self):
+        pass

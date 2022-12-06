@@ -56,19 +56,18 @@ class TodoCardViewSet(mixins.CreateModelMixin,
         todo = self.get_object()
         serializer = serializers.RequestTodoCardStatusSerializer(
             data=request.data)
-        if serializer.is_valid():
-            if serializer.data['is_done']:
-                todo.done_at = timezone.now()
-            else:
-                todo.done_at = None
 
-            todo.save()
-            data = serializers.TodoCardSerializer(todo).data
-            return Response(data, status=status.HTTP_200_OK)
-        else:
+        if not serializer.is_valid():
             return Response(
                 serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST)
+
+        todo.done_at = timezone.now() \
+            if serializer.data['is_done'] else \
+            None
+        todo.save()
+        data = serializers.TodoCardSerializer(todo)
+        return Response(data.data, status=status.HTTP_200_OK)
 
     @action(
         methods=['GET'],
