@@ -22,9 +22,12 @@ TODO_CARD_BY_COLOR_URL = \
 
 def list_and_filtering_todo_card_base_url(**kwargs):
     is_have_color = kwargs.get('is_have_color', None)
+    is_done = kwargs.get('is_done', None)
     query_params_str = ''
     if is_have_color is not None:
         query_params_str += f'is_have_color={is_have_color}'
+    if is_done is not None:
+        query_params_str += f'&is_done={is_done}'
 
     return f'{TODO_CARD_URL}?{query_params_str}'
 
@@ -498,3 +501,67 @@ class PrivateTodoCardApiTest(TestCase):
             self.assertIsNotNone(todo_card['color'])
         for todo_card in res_not_have_color.data:
             self.assertIsNone(todo_card['color'])
+
+    def test_get_task_no_color_is_done_and_not_done(self):
+        # initial list todo_task
+        color_list = [
+            TodoCard.TodoCardColor.PINK,
+            TodoCard.TodoCardColor.ORANGE,
+            TodoCard.TodoCardColor.BLUE,
+            TodoCard.TodoCardColor.GREEN
+        ]
+        res_list = []
+        for x in range(10):
+            payload_x = {
+                'name': 'test_todo',
+                'description': 'this is task for testing'
+            }
+            is_have_color = random.choice([True, False])
+            if is_have_color:
+                payload_x['color'] = random.choice(color_list)
+            res = self.client.post(
+                TODO_CARD_URL, payload_x)
+            payload_done_status = \
+                {'is_done': random.choice([True, False])}
+            res_set_done = self.client.patch(
+                update_todo_status_url(res.data['id']),
+                payload_done_status)
+            res_list.append(dict(res_set_done.data))
+
+        # test api
+        payload_no_color_and_not_done = {
+            'is_have_color': False,
+            'is_done': False
+        }
+        payload_no_color_and_done = {
+            'is_have_color': False,
+            'is_done': True
+        }
+
+        res_no_color_and_not_done = self.client.get(
+            list_and_filtering_todo_card_base_url(
+                **payload_no_color_and_not_done))
+        res_no_color_and_done = self.client.get(
+            list_and_filtering_todo_card_base_url(
+                **payload_no_color_and_done))
+
+        self.assertEqual(
+            res_no_color_and_done.status_code,
+            status.HTTP_200_OK)
+        self.assertEqual(
+            res_no_color_and_not_done.status_code,
+            status.HTTP_200_OK)
+
+        expect_res_no_color_and_not_done = list(filter(
+            lambda x: x['color'] is None and x['done_at'] is None,
+            res_list))
+        expect_res_no_color_and_done = list(filter(
+            lambda x: x['color'] is None and x['done_at'] is not None,
+            res_list))
+
+        self.assertTrue(
+            res_no_color_and_done.data,
+            expect_res_no_color_and_done)
+        self.assertEqual(
+            res_no_color_and_not_done.data,
+            expect_res_no_color_and_not_done)
