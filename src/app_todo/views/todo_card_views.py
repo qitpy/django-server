@@ -23,10 +23,6 @@ class TodoCardViewSet(mixins.CreateModelMixin,
     serializer_class = serializers.TodoCardDetailSerializer
     http_method_names = ['get', 'post', 'patch', 'delete']
 
-    """
-    note that any custom view will not call this func
-    LOL : )
-    """
     def get_queryset(self):
         user_todo = UserTodo.objects.get(
                 user=self.request.user)
