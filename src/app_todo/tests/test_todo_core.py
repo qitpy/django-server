@@ -26,7 +26,6 @@ def list_and_filtering_todo_card_base_url(**kwargs):
     if is_have_color is not None:
         query_params_str += f'is_have_color={is_have_color}'
 
-    print(f'{TODO_CARD_URL}?{query_params_str}')
     return f'{TODO_CARD_URL}?{query_params_str}'
 
 
@@ -438,13 +437,19 @@ class PrivateTodoCardApiTest(TestCase):
         self.assertEqual(res_done_task.status_code, status.HTTP_200_OK)
         self.assertEqual(res_not_done_task.status_code, status.HTTP_200_OK)
 
+        # test number of item is fulfill
+        number_items = 0
+        for _, value in res_done_task.data.items():
+            number_items += len(value)
+        for _, value in res_not_done_task.data.items():
+            number_items += len(value)
+        self.assertEqual(number_items, 10)
+
+        # test response item is the right type
         expect_item_done_task = list(filter(
                 lambda x: x['done_at'] is not None, res_list))
         expect_item_not_done_task = list(filter(
                 lambda x: x['done_at'] is None, res_list))
-        self.assertEqual(
-            len(res_done_task.data) + len(res_not_done_task.data),
-            10)
         for key, _ in res_done_task.data.items():
             for task_done in res_done_task.data[key]:
                 self.assertIn(dict(task_done), expect_item_done_task)
@@ -452,14 +457,14 @@ class PrivateTodoCardApiTest(TestCase):
             for task_not_done in res_not_done_task.data[key]:
                 self.assertIn(dict(task_not_done), expect_item_not_done_task)
 
-
     def test_get_task_have_no_color_filter(self):
-       # initial list todo_task
+        # initial list todo_task
         color_list = [
             TodoCard.TodoCardColor.PINK,
             TodoCard.TodoCardColor.ORANGE,
             TodoCard.TodoCardColor.BLUE,
-            TodoCard.TodoCardColor.GREEN]
+            TodoCard.TodoCardColor.GREEN
+        ]
         payload = {
             'name': 'test_todo',
             'description': 'this is task for testing'
@@ -481,10 +486,11 @@ class PrivateTodoCardApiTest(TestCase):
         }
         res_have_color = self.client.get(
             list_and_filtering_todo_card_base_url(**payload_have_color))
-        self.assertEqual(res_have_color.status_code, status.HTTP_200_OK)
         res_not_have_color = self.client.get(
             list_and_filtering_todo_card_base_url(**payload_not_have_color))
+
         self.assertEqual(res_have_color.status_code, status.HTTP_200_OK)
+        self.assertEqual(res_not_have_color.status_code, status.HTTP_200_OK)
         self.assertEqual(
             len(res_have_color.data) + len(res_not_have_color.data),
             10)
