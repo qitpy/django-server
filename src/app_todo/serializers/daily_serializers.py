@@ -33,5 +33,6 @@ class DailySerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
 class RequestTodoDailyDoneStatusSerializer(serializers.Serializer):
     is_done = serializers.BooleanField(required=True)

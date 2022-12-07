@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase, RequestFactory
+from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -12,7 +12,6 @@ from core.models import (
 )
 
 import datetime
-import random
 
 
 TODO_DAILY_URL = reverse('app_todo:todo_daily-list')
@@ -21,8 +20,10 @@ TODO_DAILY_URL = reverse('app_todo:todo_daily-list')
 def todo_daily_detail_url(pk):
     return reverse('app_todo:todo_daily-detail', args=[pk])
 
+
 def update_todo_daily_done_status_url(pk):
     return reverse('app_todo:todo_daily-set-done', args=[pk])
+
 
 def create_user(email='quyet.doan@gmail.com', name='User-name'):
     return get_user_model().objects.create_user(email, name)
@@ -54,7 +55,6 @@ class PrivateTodoDailyApiTest(TestCase):
         self.client = APIClient()
         self.user = create_user()
         self.client.force_authenticate(self.user)
-
 
     def test_todo_daily_create_successful(self):
         res = self.client.post(
@@ -247,7 +247,6 @@ class PrivateTodoDailyApiTest(TestCase):
                 payload_create_todo_daily_default)
             res_list_created.append(res.data)
 
-
         # create other user and todo of that user
         other_user = create_user(email='other@user.com')
         other_user_todo = UserTodo.objects.create(user=other_user)
@@ -294,4 +293,3 @@ class PrivateTodoDailyApiTest(TestCase):
         res_list_todo = self.client.get(TODO_DAILY_URL)
         for i, x in enumerate(res_list_todo.data):
             self.assertEqual(x['id'], res_expect[i])
-

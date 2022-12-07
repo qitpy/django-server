@@ -11,6 +11,7 @@ from core.models import (
 
 from app_todo import serializers
 
+
 class DailyViewSet(mixins.CreateModelMixin,
                    mixins.UpdateModelMixin,
                    mixins.DestroyModelMixin,
@@ -56,4 +57,3 @@ class DailyViewSet(mixins.CreateModelMixin,
         daily_todo.save()
         data = serializers.DailySerializer(daily_todo)
         return Response(data.data, status=status.HTTP_200_OK)
-
