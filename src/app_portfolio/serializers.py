@@ -8,8 +8,26 @@ from app_portfolio.utils import (
     validate_limit_message_in_a_minutes,
     validate_ip_address,
 )
+from drf_spectacular.utils import (
+    OpenApiExample,
+    extend_schema_serializer,
+)
 
 
+@extend_schema_serializer(
+    examples=[
+        OpenApiExample(
+            'body',
+            description='save user IP to server',
+            value={"ip_address": "121.115.32.142"},
+            request_only=True,),
+        OpenApiExample(
+            'body',
+            description='',
+            value={
+                "id": 0,
+                "ip_address": "121.115.32.142"},
+            response_only=True, ), ])
 class PortfolioAccessFrequencySerializer(serializers.ModelSerializer):
     class Meta:
         model = PortfolioAccessFrequency
@@ -17,6 +35,25 @@ class PortfolioAccessFrequencySerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
 
 
+@extend_schema_serializer(
+    examples=[
+        OpenApiExample(
+            'body',
+            description='save user IP to server',
+            value={
+                "message": "hello, this is message from someone special",
+                "name_or_email": "secret",
+                "ip_address": "121.115.32.142"},
+            request_only=True,),
+        OpenApiExample(
+            'body',
+            description='',
+            value={
+                "id": 0,
+                "message": "hello, this is message from someone special",
+                "name_or_email": "secret",
+                "ip_address": "121.115.32.142"},
+            response_only=True, ), ])
 class PortfolioMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PortfolioMessage

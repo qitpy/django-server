@@ -11,9 +11,24 @@ from core.models import (
 from django.utils import timezone
 from drf_spectacular.utils import (
     extend_schema,
+    OpenApiParameter,
+    OpenApiTypes,
+    extend_schema_view
 )
 
 
+@extend_schema_view(
+    list=extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "is_done",
+                OpenApiTypes.BOOL,
+                OpenApiParameter.QUERY),
+            OpenApiParameter(
+                "is_have_color",
+                OpenApiTypes.BOOL,
+                OpenApiParameter.QUERY),
+        ], ))
 class TodoCardViewSet(mixins.CreateModelMixin,
                       mixins.UpdateModelMixin,
                       mixins.DestroyModelMixin,
@@ -52,7 +67,7 @@ class TodoCardViewSet(mixins.CreateModelMixin,
 
     @extend_schema(
         request=serializers.RequestTodoCardStatusSerializer,
-        responses={201: serializers.TodoCardSerializer})
+        responses={200: serializers.TodoCardSerializer})
     @action(
         methods=['PATCH'],
         detail=True,
@@ -76,6 +91,11 @@ class TodoCardViewSet(mixins.CreateModelMixin,
         return Response(data.data, status=status.HTTP_200_OK)
 
     @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                "is_done",
+                OpenApiTypes.BOOL,
+                OpenApiParameter.QUERY), ],
         request=None,
         responses={200: serializers.ResponseGetListByColor, })
     @action(

@@ -558,7 +558,7 @@ class PrivateTodoCardApiTest(TestCase):
             lambda x: x['color'] is None and x['done_at'] is not None,
             res_list))
 
-        self.assertTrue(
+        self.assertEqual(
             res_no_color_and_done.data,
             expect_res_no_color_and_done)
         self.assertEqual(
