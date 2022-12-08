@@ -1,8 +1,6 @@
 from drf_spectacular.utils import extend_schema
-from rest_framework import status
 
 from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
 from google.oauth2 import id_token
 from google.auth.transport import requests
 
@@ -16,14 +14,19 @@ from user.serializers import (
     UserRegisterResponseSerializer,
 )
 
+from core.exceptions.exceptions import RegisterWithGoogleTokenInvalid
+from core.exceptions.exception_serializer import ExceptionSerializer
+
 
 class LoginWithGoogle(KnoxLoginView):
     permission_classes = (AllowAny,)
 
     @extend_schema(
         request=UserRegisterRequestSerializer,
-        responses=UserRegisterResponseSerializer,
-    )
+        responses={
+            200: UserRegisterResponseSerializer,
+            400: ExceptionSerializer, },
+        description='Register new account to access the api',)
     def post(self, request, format=None):
         try:
             google_credential = request.data.get('credential')
@@ -34,12 +37,7 @@ class LoginWithGoogle(KnoxLoginView):
             email = user_info['email']
             name = user_info['name']
         except ValueError:
-            return Response(
-                {
-                    'detail': 'token invalid'
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+            raise RegisterWithGoogleTokenInvalid()
 
         user, is_new_user = get_user_model().objects.get_or_create(
             email=email, name=name

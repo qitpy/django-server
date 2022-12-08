@@ -3,6 +3,10 @@ from core.models import (
     TodoDaily,
     UserTodo,
 )
+from drf_spectacular.utils import (
+    extend_schema_serializer,
+    OpenApiExample,
+)
 
 
 class DailySerializer(serializers.ModelSerializer):
@@ -34,5 +38,17 @@ class DailySerializer(serializers.ModelSerializer):
         return instance
 
 
+@extend_schema_serializer(
+    examples=[
+        OpenApiExample(
+            'set task done',
+            description='',
+            value={'is_done': True},
+            request_only=True,),
+        OpenApiExample(
+            'set task not done yet',
+            description='',
+            value={'is_done': False},
+            request_only=True, ), ])
 class RequestTodoDailyDoneStatusSerializer(serializers.Serializer):
     is_done = serializers.BooleanField(required=True)

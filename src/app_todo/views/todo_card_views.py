@@ -9,6 +9,9 @@ from core.models import (
     UserTodo,
 )
 from django.utils import timezone
+from drf_spectacular.utils import (
+    extend_schema,
+)
 
 
 class TodoCardViewSet(mixins.CreateModelMixin,
@@ -47,6 +50,9 @@ class TodoCardViewSet(mixins.CreateModelMixin,
             return serializers.RequestTodoCardStatusSerializer
         return self.serializer_class
 
+    @extend_schema(
+        request=serializers.RequestTodoCardStatusSerializer,
+        responses={201: serializers.TodoCardSerializer})
     @action(
         methods=['PATCH'],
         detail=True,
@@ -69,6 +75,9 @@ class TodoCardViewSet(mixins.CreateModelMixin,
         data = serializers.TodoCardSerializer(todo)
         return Response(data.data, status=status.HTTP_200_OK)
 
+    @extend_schema(
+        request=None,
+        responses={200: serializers.ResponseGetListByColor, })
     @action(
         methods=['GET'],
         detail=False,

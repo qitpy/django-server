@@ -25,6 +25,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'change_me')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(int(os.environ.get('DEBUG', 0)))
+# DEBUG = True
 
 ALLOWED_HOSTS = []
 ALLOWED_HOSTS.extend(
@@ -155,6 +156,7 @@ AUTH_USER_MODEL = 'core.User'
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
+    'EXCEPTION_HANDLER': 'core.exceptions.custom_exception_handler.custom_exception_handler'
 }
 
 REST_KNOX = {
