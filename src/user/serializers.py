@@ -16,7 +16,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ['email', 'name']
+        fields = ['id', 'email', 'name']
+        read_only_fields = ['id']
 
     def create(self, validated_data):
         """create and return a user with encrypted password"""
@@ -51,6 +52,7 @@ class UserRegisterRequestSerializer(serializers.Serializer):
                 from response after login success',
             value={
                 "user": {
+                    "id": 0,
                     "email": "user@example.com",
                     "name": "user name"
                 },

@@ -3,12 +3,14 @@ from django.contrib.auth import login
 from drf_spectacular.utils import extend_schema
 from rest_framework.permissions import AllowAny
 from knox.views import LoginView as KnoxLoginView
-from user.utils import login_with_google_and_get_info
+from user.utils import UserUtils
 from user.serializers import (
     UserRegisterRequestSerializer,
     UserRegisterResponseSerializer,
 )
 from core.exceptions.exception_serializer import ExceptionSerializer
+from core.models import User
+from user.serializers import UserSerializer
 
 
 class LoginWithGoogle(KnoxLoginView):
@@ -22,7 +24,8 @@ class LoginWithGoogle(KnoxLoginView):
         description='Register new account to access the api',)
     def post(self, request, format=None):
         google_credential = request.data.get('credential')
-        email, name = login_with_google_and_get_info(google_credential)
+        email, name = \
+            UserUtils.login_with_google_and_get_info(google_credential)
         user, is_new_user = get_user_model().objects.get_or_create(
             email=email, name=name
         )
@@ -32,10 +35,7 @@ class LoginWithGoogle(KnoxLoginView):
 
     def get_post_response_data(self, request, token, instance):
         """Custom response data when login via GG success"""
-        UserSerializer = self.get_user_serializer_class()
         data = {'token': token}
-        if UserSerializer is not None:
-            data["user"] = UserSerializer(
-                    request.user,
-                    context=self.get_context()).data
+        user = User.objects.get(email=request.user)
+        data["user"] = UserSerializer(user).data
         return data
