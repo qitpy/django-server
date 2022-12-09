@@ -26,8 +26,6 @@ class LoginWithGoogle(KnoxLoginView):
         user, is_new_user = get_user_model().objects.get_or_create(
             email=email, name=name
         )
-        if not is_new_user:
-            user.auth_token_set.all().delete()
         login(request, user)
 
         return super(LoginWithGoogle, self).post(request, format=None)

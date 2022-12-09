@@ -15,8 +15,9 @@
 #     User,
 # )
 
-# USER_REGISTER_URL = reverse('user:register')
-# USER_LOGIN_URL = reverse('user:login')
+# USER_LOGIN_URL = reverse('user:login_with_google')
+# USER_LOGOUT_URL = reverse('user:knox_logoutall')
+# USER_LOGOUT = reverse('user:knox_logout')
 
 
 # def user_verify_email_url(query_params):

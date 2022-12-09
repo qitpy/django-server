@@ -14,7 +14,7 @@ urlpatterns = [
     ),
     path('logout/', knox_views.LogoutView.as_view(), name='knox_logout'),
     path(
-        'logoutall/',
+        'logout-all-device/',
         knox_views.LogoutAllView.as_view(),
         name='knox_logoutall'
     ),
