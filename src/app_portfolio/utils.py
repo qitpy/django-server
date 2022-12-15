@@ -32,6 +32,6 @@ def send_notify_email(message: PortfolioMessage):
         'Portfolio Message',
         message_template,
         'maitocode@gmail.com',
-        ['code.maito@gmail.com'],
+        ['qitpydev@gmail.com'],
         fail_silently=False,
     )
