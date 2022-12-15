@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   src:
-    container_name: maito_src_dev
+    container_name: qitpy_src_dev
     depends_on:
       - database
     build:
@@ -14,7 +14,7 @@ services:
       - ${API_LOCAL_PORT}:${API_LOCAL_PORT}
     volumes:
       - ./src:/src
-      - maito-static-data-dev:/vol/web
+      - qitpy-static-data-dev:/vol/web
     command: >
       sh -c "python manage.py wait_for_db &&
              python manage.py migrate &&
@@ -33,29 +33,29 @@ services:
       - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
 
   pgadmin:
-    container_name: maito_pgadmin_dev
+    container_name: qitpy_pgadmin_dev
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     volumes:
-      - maito-pgadmin-dev:/var/lib/pgadmin
+      - qitpy-pgadmin-dev:/var/lib/pgadmin
     ports:
       - ${PGADMIN_PORT}:80
     restart: unless-stopped
 
   database:
-    container_name: maito_database_dev
+    container_name: qitpy_database_dev
     image: postgres:13-alpine
     volumes:
-      - maito-db-data-dev:/var/lib/postgresql/data
+      - qitpy-db-data-dev:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASS}
 
 volumes:
-  maito-db-data-dev:
-  maito-pgadmin-dev:
-  maito-static-data-dev:
+  qitpy-db-data-dev:
+  qitpy-pgadmin-dev:
+  qitpy-static-data-dev:

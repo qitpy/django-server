@@ -1,4 +1,4 @@
-name: maito-server
+name: qitpy-server
 
 on:
   push:
