@@ -26,14 +26,14 @@ class LoginWithGoogle(KnoxLoginView):
         google_credential = request.data.get('credential')
         email, name = \
             UserUtils.login_with_google_and_get_info(google_credential)
-        user, is_new_user = get_user_model().objects.get_or_create(
+        user, _ = get_user_model().objects.get_or_create(
             email=email, name=name
         )
         login(request, user)
 
         return super(LoginWithGoogle, self).post(request, format=None)
 
-    def get_post_response_data(self, request, token, instance):
+    def get_post_response_data(self, request, token, _):
         """Custom response data when login via GG success"""
         data = {'token': token}
         user = User.objects.get(email=request.user)
